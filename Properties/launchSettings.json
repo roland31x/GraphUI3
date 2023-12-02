@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "GraphUI3 (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "GraphUI3 (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}
