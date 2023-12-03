@@ -88,10 +88,7 @@ namespace GraphUI3
             canvas.Children.Add(BodyHitBox);
             canvas.Children.Add(SelectionBorder);
 
-            if (Child.X == 0 && Child.Y == 0)
-                MoveTo(canvas.ActualWidth / 2, canvas.ActualHeight / 2);
-            else
-                MoveTo(Child.X, Child.Y);
+            MoveTo(Child.X, Child.Y);
 
             Canvas.SetZIndex(SelectionBorder, 1);
             Canvas.SetZIndex(Body, 2);

@@ -87,9 +87,19 @@ namespace GraphUI3
                 edges.Add(e, toadd);
             }
         }
-        private UINode NewNode()
+        private UINode NewNode(double X = -1, double Y = -1)
         {
             Node graphnode = new Node();
+            if(X > 0 && Y > 0)
+            {
+                graphnode.X = X;
+                graphnode.Y = Y;
+            }
+            else
+            {
+                graphnode.X = GraphCanvas.ActualWidth / 2;
+                graphnode.Y = GraphCanvas.ActualHeight / 2;
+            }
             LoadedGraph.Nodes.Add(graphnode);
 
             UINode toadd = new UINode(graphnode, GraphCanvas);
@@ -103,7 +113,8 @@ namespace GraphUI3
 
             return toadd;
         }
-        private void NewNode_Click(object sender, RoutedEventArgs e) => NewNode();
+        private void GraphCanvas_DoubleTapped(object sender, DoubleTappedRoutedEventArgs e) => NewNode(e.GetPosition(GraphCanvas).X, e.GetPosition(GraphCanvas).Y);
+        //private void NewNode_Click(object sender, RoutedEventArgs e) => NewNode();
 
         private void SelectNode(object sender, SelectionEventArgs e)
         {
@@ -353,5 +364,7 @@ namespace GraphUI3
             IntPtr WindowHandle { get; }
         }
         #endregion
+
+
     }
 }

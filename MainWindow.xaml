@@ -9,18 +9,18 @@
     mc:Ignorable="d"
     Title="GraphUI3">
     <Grid x:Name="MainGrid"
-          PointerMoved="MainGrid_PointerMoved"
-          Background="#100f22">
-        
-        <Canvas Visibility="Visible"
-                x:Name="GraphCanvas">
+          PointerMoved="MainGrid_PointerMoved">
+
+        <Canvas Background="#100f22"
+                DoubleTapped="GraphCanvas_DoubleTapped">
         </Canvas>
-        <RelativePanel>
-            
-        </RelativePanel>
+
+        <Canvas x:Name="GraphCanvas">
+        </Canvas>
         
         <RelativePanel>
-            <Button Content="ADD NODE"
+
+            <!--<Button Content="ADD NODE"
                     FontSize="20"
                     Click="NewNode_Click"
                     Background="#FF94FF65"
@@ -29,8 +29,8 @@
                     Foreground="Black"
                     RelativePanel.AlignTopWithPanel="True"
                     RelativePanel.AlignHorizontalCenterWithPanel="True"
-                    Margin="0,20,0,20" />
-            
+                    Margin="0,20,0,20" />--> 
+
             <MenuBar x:Name="FileMenuBar"
                      RelativePanel.AlignLeftWithPanel="True">
                 <MenuBarItem Title="File">
@@ -48,7 +48,7 @@
                                     Click="Exit_Click" />
                 </MenuBarItem>
             </MenuBar>
-            
+
             <DropDownButton x:Name="ViewButton"
                             Content="View"
                             RelativePanel.RightOf="FileMenuBar"
@@ -66,14 +66,14 @@
                     </Flyout>
                 </DropDownButton.Flyout>
             </DropDownButton>
-            
+
             <MenuBar x:Name="HelpMenuBar"
                      RelativePanel.RightOf="ViewButton">
                 <MenuBarItem Title="Help">
                     <MenuFlyoutItem Text="About" />
                 </MenuBarItem>
             </MenuBar>
-            
+
             <DropDownButton x:Name="AlgoButton"
                             RelativePanel.AlignRightWithPanel="True"
                             Content="Algorithms"
