@@ -20,7 +20,6 @@ using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.UI.Core;
 using Windows.UI.ViewManagement;
-using Graphing;
 using Microsoft.UI.Xaml.Documents;
 using Windows.Storage.Pickers;
 using Windows.Storage;
@@ -28,6 +27,7 @@ using System.Runtime.InteropServices;
 using System.Diagnostics;
 using Windows.UI.Popups;
 using WinRT;
+using Graphing;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -190,7 +190,9 @@ namespace GraphUI3
 
         private void Color_Click(object sender, RoutedEventArgs e)
         {
-            
+            Dictionary<Node, int> colored = LoadedGraph.GraphColor();
+            foreach(Node node in colored.Keys)
+                nodes[node].BodyColor = colors[colored[node]];
         }
         async Task<bool> Reset()
         {
