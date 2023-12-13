@@ -70,10 +70,10 @@ namespace GraphUI3
         public MainWindow()
         {
             InitializeComponent();
-            Title = "GraphUI3 - " + LoadedPath + _g.Name + "*";
+            Title = "GraphUI3 - " + LoadedPath + _g.Name + "*";           
         }
         void ReInitOnGraph()
-        {
+        {            
             foreach(Node n in LoadedGraph.Nodes)
             {
                 UINode toadd = new UINode(n, GraphCanvas);
@@ -190,15 +190,19 @@ namespace GraphUI3
             else
                 held = null;
         }
-
-        async Task<bool> Reset()
+        private void ResetColors_Click(object sender, RoutedEventArgs e)
         {
-            if (changes)
+            nodes.Values.ToList().ForEach(x => x.SetColor(UINode.BaseBodyColor));
+            edges.Values.ToList().ForEach(x => x.SetColor(UIEdge.BaseColor));
+        }
+
+        async Task<bool> Reset(bool force = false)
+        {
+            if (changes && !force)
                 if (!await ShowSaveDialog())
                     return false;
 
-            foreach(UINode node in nodes.Values.ToList())
-                node.SendDeleteRequest();
+            nodes.Values.ToList().ForEach(x => x.SendDeleteRequest());
 
             GraphCanvas.Children.Clear();
             nodes.Clear();
@@ -381,27 +385,27 @@ namespace GraphUI3
         }
         private void Hamilton_Click(object sender, RoutedEventArgs e)
         {
-            List<List<Node>> ham = LoadedGraph.Hamilton(true, false);
+            List<List<Node>> ham = LoadedGraph.Hamilton(false, false);
 
             ShowNodePathFlyoutMenu(ham);
         }       
 
         private void HamiltonCycle_Click(object sender, RoutedEventArgs e)
         {
-            List<List<Node>> hamc = LoadedGraph.Hamilton(true, true);
+            List<List<Node>> hamc = LoadedGraph.Hamilton(false, true);
 
             ShowNodePathFlyoutMenu(hamc);
         }
 
         private void Euler_Click(object sender, RoutedEventArgs e)
         {
-            List<List<Edge>> eup = LoadedGraph.Euler(true, false);
+            List<List<Edge>> eup = LoadedGraph.Euler(false, false);
 
             ShowNodePathFlyoutMenu(eup);
         }
         private void EulerCycle_Click(object sender, RoutedEventArgs e)
         {
-            List<List<Edge>> euc = LoadedGraph.Euler(true, true);
+            List<List<Edge>> euc = LoadedGraph.Euler(false, true);
 
             ShowNodePathFlyoutMenu(euc);
         }
@@ -505,6 +509,18 @@ namespace GraphUI3
 
             f.Closed -= NodePathFlyout_Closed;
             f = null!;
+        }
+
+        private async void Kruskal_Click(object sender, RoutedEventArgs e)
+        {
+            List<Edge> mst = LoadedGraph.Kruskal();
+            Graph newgraph = new Graph(LoadedGraph.Name);
+            foreach (Node n in nodes.Keys)
+                newgraph.Nodes.Add(n);
+            mst.ForEach(x => newgraph.Edges.Add(x));
+            await Reset(true);
+            LoadedGraph = newgraph;
+            changes = true;
         }
         #endregion
 

@@ -15,6 +15,7 @@ using Microsoft.UI.Input;
 using Windows.Foundation;
 using Graphing;
 using Windows.UI;
+using System.Globalization;
 
 namespace GraphUI3
 {
@@ -23,7 +24,7 @@ namespace GraphUI3
     {
         public readonly static Brush BaseColor = new SolidColorBrush(Color.FromArgb(255, 150, 150, 150));
         public Edge Child { get; private set; }
-        public int Value { get => Child.Weight;  set { Child.Weight = value; WeightCalc(); } }
+        public double Value { get => Child.Weight;  set { Child.Weight = value; WeightCalc(); } }
 
         public UINode A;
         public UINode B;
@@ -101,7 +102,7 @@ namespace GraphUI3
                 tb.Background = new SolidColorBrush(Colors.Black);
                 return;
             }
-            if (int.TryParse(text, out int value))
+            if (double.TryParse(text, out double value))
             {
                 if (value >= 0)
                 {

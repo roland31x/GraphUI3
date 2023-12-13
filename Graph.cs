@@ -4,6 +4,8 @@ using System.IO;
 using System;
 using System.Linq;
 using System.Globalization;
+using Windows.Data.Xml.Dom;
+using Windows.Foundation;
 
 
 namespace Graphing
@@ -26,10 +28,10 @@ namespace Graphing
             sb.Append(Nodes.Count).AppendLine();
             for (int i = 0; i < Nodes.Count; i++)
                 sb.Append(i).Append(' ').Append(Nodes[i].Name == "" ? "_" : Nodes[i].Name.Replace(" ","_")).Append(' ').Append(Nodes[i].Value).Append(' ').Append(Nodes[i].X).Append(' ').Append(Nodes[i].Y).AppendLine();
-            HashSet<(int, int, int)> hs = new HashSet<(int, int, int)>();
+            HashSet<(int, int, double)> hs = new HashSet<(int, int, double)>();
             foreach (Edge e in Edges)
                 hs.Add((Math.Min(Nodes.IndexOf(e.A), Nodes.IndexOf(e.B)), Math.Max(Nodes.IndexOf(e.A), Nodes.IndexOf(e.B)), e.Weight));
-            foreach ((int a, int b, int w) in hs)
+            foreach ((int a, int b, double w) in hs)
                 sb.Append(a).Append(' ').Append(b).Append(' ').Append(w).AppendLine();
 
             return sb.ToString();
@@ -73,6 +75,64 @@ namespace Graphing
     }
     public static class GraphExt
     {
+        static double Dist(Point a, Point b) => Math.Sqrt((a.X - b.X) * (a.X - b.X) + (a.Y - b.Y) * (a.Y - b.Y));
+        public static List<Edge> Kruskal(this Graph g)
+        {
+            List<Edge> MinimumSpanningTree = new List<Edge>();
+
+            List<Edge> SortedEdges = new List<Edge>();
+
+            if (g.Edges.Any())
+                SortedEdges.AddRange(g.Edges);
+            else
+                for(int i = 0; i < g.Nodes.Count; i++)
+                    for(int j = i + 1; j < g.Nodes.Count; j++)
+                        SortedEdges.Add(new Edge(g.Nodes[i], g.Nodes[j]) { Weight = Dist(new Point(g.Nodes[i].X, g.Nodes[i].Y), new Point(g.Nodes[j].X, g.Nodes[j].Y)) } );
+
+            SortedEdges.Sort((x,y) => x.Weight.CompareTo(y.Weight));
+
+            List<List<Node>> SubGraphs = new List<List<Node>>();
+            MinimumSpanningTree.Add(SortedEdges.First());
+            SubGraphs.Add(new List<Node>() { SortedEdges.First().A, SortedEdges.First().B });
+
+            SortedEdges.Remove(SortedEdges.First());
+
+            while (SortedEdges.Any())
+            {
+                if (SubGraphs.First().Count == g.Nodes.Count)
+                    break;
+
+                Edge next = SortedEdges.First();
+                SortedEdges.Remove(next);
+                MinimumSpanningTree.Add(next);
+
+                int A_ParentSubgraph = -1;
+                int B_ParentSubgraph = -1;
+                
+                SubGraphs.ForEach((x) => { 
+                    if (x.Contains(next.A))
+                        A_ParentSubgraph = SubGraphs.IndexOf(x);
+                    if (x.Contains(next.B))
+                        B_ParentSubgraph = SubGraphs.IndexOf(x);
+                });
+                if(A_ParentSubgraph == -1 && B_ParentSubgraph == -1)
+                    SubGraphs.Add(new List<Node>() { next.A, next.B });
+                else if (A_ParentSubgraph != -1 && B_ParentSubgraph == -1)
+                    SubGraphs[A_ParentSubgraph].Add(next.B);
+                else if (B_ParentSubgraph != -1 && A_ParentSubgraph == -1)
+                    SubGraphs[B_ParentSubgraph].Add(next.A);
+                else if((B_ParentSubgraph != -1 && A_ParentSubgraph != -1) && A_ParentSubgraph != B_ParentSubgraph)
+                {
+                    SubGraphs[A_ParentSubgraph] = SubGraphs[A_ParentSubgraph].Union(SubGraphs[B_ParentSubgraph]).ToList();
+                    SubGraphs.Remove(SubGraphs[B_ParentSubgraph]);
+                }
+                else
+                    MinimumSpanningTree.Remove(next);
+
+            }
+
+            return MinimumSpanningTree;
+        }
         public static Dictionary<Node, int> GraphColor(this Graph g)
         {
             Dictionary<Node, int> colored = new Dictionary<Node, int>();           
@@ -202,7 +262,7 @@ namespace Graphing
     }
     public class Edge
     {
-        public int Weight { get; set; }
+        public double Weight { get; set; }
         public Node A { get; private set; }
         public Node B { get; private set; }
         public Edge(Node a, Node b)

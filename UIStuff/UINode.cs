@@ -16,6 +16,7 @@ namespace GraphUI3
 #nullable enable
     public class UINode : IDeletable
     {
+        public static readonly Brush BaseBodyColor = new SolidColorBrush(Color.FromArgb(255, 40, 40, 40));
         public Node Child { get; private set; } 
         public int Value { get => Child.Value; private set => Child.Value = value; }
         public string Name 
@@ -37,7 +38,7 @@ namespace GraphUI3
         Ellipse BodyHitBox { get; set; }
         Ellipse SelectionBorder { get; set; }
 
-        Brush _c = new SolidColorBrush(Color.FromArgb(255, 40, 40, 40));
+        Brush _c = BaseBodyColor;
         public Brush BodyColor { get { return _c; } set { _c = value; Body.Fill = _c; } }
 
         bool _s = false;
@@ -81,6 +82,7 @@ namespace GraphUI3
         public List<UIElement> GetAllElements() => new List<UIElement>() { Body, BodyHitBox, SelectionBorder, NameLabel };
 
 
+        public void SetColor(Brush b) => BodyColor = b;
         void SpawnOn(Canvas canvas)
         {
             canvas.Children.Add(Body);

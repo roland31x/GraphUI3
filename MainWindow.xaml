@@ -69,9 +69,14 @@
 
             <MenuBar x:Name="HelpMenuBar"
                      RelativePanel.RightOf="ViewButton">
+                <MenuBarItem Title="Edit">
+                    <MenuFlyoutItem Text="Reset Colors"
+                                    Click="ResetColors_Click" />
+                </MenuBarItem>
                 <MenuBarItem Title="Help">
                     <MenuFlyoutItem Text="About" />
                 </MenuBarItem>
+                
             </MenuBar>
 
             <DropDownButton x:Name="AlgoButton"
@@ -84,21 +89,30 @@
                                         x:Name="ColorButton"
                                         Click="Color_Click"
                                         Background="#4b03a3" />
+                        
                         <MenuFlyoutItem Text="Hamilton"
                                         x:Name="HamiltonButton"
                                         Click="Hamilton_Click"
                                         Background="#a8e600" />
+                        
                         <MenuFlyoutItem Text="Hamilton Cycle"
                                         x:Name="HamiltonCButton"
                                         Click="HamiltonCycle_Click"
                                         Background="#dbff7a" />
+                        
                         <MenuFlyoutItem Text="Euler"
                                         x:Name="EulerButton"
                                         Click="Euler_Click"
                                         Background="#072ca6" />
+                        
                         <MenuFlyoutItem Text="Euler Cycle"
                                         x:Name="EulerCButton"
                                         Click="EulerCycle_Click"
+                                        Background="#527aff" />
+
+                        <MenuFlyoutItem Text="Kruskal"
+                                        x:Name="KruskalButton"
+                                        Click="Kruskal_Click"
                                         Background="#527aff" />
                     </MenuFlyout>
                 </DropDownButton.Flyout>
