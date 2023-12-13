@@ -28,6 +28,9 @@ using System.Diagnostics;
 using Windows.UI.Popups;
 using WinRT;
 using Graphing;
+using Windows.UI.Input;
+using Microsoft.UI.Xaml.Shapes;
+using Windows.UI;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -62,7 +65,7 @@ namespace GraphUI3
                     Title = "GraphUI3 - " + LoadedPath + " " + _g.Name;                     
             } 
         }
-        public static List<Brush> colors = new List<Brush>() { new SolidColorBrush(Colors.Red), new SolidColorBrush(Colors.Pink), new SolidColorBrush(Colors.Blue), new SolidColorBrush(Colors.Yellow), new SolidColorBrush(Colors.Green), new SolidColorBrush(Colors.Purple) };
+        public static List<Brush> colors = new List<Brush>() { new SolidColorBrush(Colors.Red), new SolidColorBrush(Colors.Orange), new SolidColorBrush(Colors.Yellow), new SolidColorBrush(Colors.Yellow), new SolidColorBrush(Colors.LimeGreen), new SolidColorBrush(Colors.Green), new SolidColorBrush(Colors.Cyan), new SolidColorBrush(Colors.Blue), new SolidColorBrush(Colors.Purple) };
         
         public MainWindow()
         {
@@ -188,12 +191,6 @@ namespace GraphUI3
                 held = null;
         }
 
-        private void Color_Click(object sender, RoutedEventArgs e)
-        {
-            Dictionary<Node, int> colored = LoadedGraph.GraphColor();
-            foreach(Node node in colored.Keys)
-                nodes[node].BodyColor = colors[colored[node]];
-        }
         async Task<bool> Reset()
         {
             if (changes)
@@ -348,6 +345,166 @@ namespace GraphUI3
         }
 
         private void ViewButton_Click(object sender, RoutedEventArgs e) => GraphInfo.Text = LoadedGraph.ToString();
+        void ColorAllEdges(List<UIEdge> edges, Brush b) => edges.ForEach(x => x.SetColor(b));
+
+        public Color Rainbow(float progress)
+        {
+            float div = (Math.Abs(progress % 1) * 6);
+            int ascending = (int)((div % 1) * 255);
+            int descending = 255 - ascending;
+
+            switch ((int)div)
+            {
+                case 0:
+                    return Color.FromArgb(255, 255, (byte)ascending, 0);
+                case 1:
+                    return Color.FromArgb(255, (byte)descending, 255, 0);
+                case 2:
+                    return Color.FromArgb(255, 0, 255, (byte)ascending);
+                case 3:
+                    return Color.FromArgb(255, 0, (byte)descending, 255);
+                case 4:
+                    return Color.FromArgb(255, (byte)ascending, 0, 255);
+                default: // case 5:
+                    return Color.FromArgb(255, 255, 0, (byte)descending);
+            }
+        }
+
+        #region ALGORITHMS
+        private void Color_Click(object sender, RoutedEventArgs e)
+        {
+            Dictionary<Node, int> colored = LoadedGraph.GraphColor();
+            foreach (Node node in colored.Keys)
+                nodes[node].BodyColor = colors[colored[node]];
+        }
+        private void Hamilton_Click(object sender, RoutedEventArgs e)
+        {
+            List<List<Node>> ham = LoadedGraph.Hamilton(true, false);
+
+            ShowNodePathFlyoutMenu(ham);
+        }       
+
+        private void HamiltonCycle_Click(object sender, RoutedEventArgs e)
+        {
+            List<List<Node>> hamc = LoadedGraph.Hamilton(true, true);
+
+            ShowNodePathFlyoutMenu(hamc);
+        }
+
+        private void Euler_Click(object sender, RoutedEventArgs e)
+        {
+            List<List<Edge>> eup = LoadedGraph.Euler(true, false);
+
+            ShowNodePathFlyoutMenu(eup);
+        }
+        private void EulerCycle_Click(object sender, RoutedEventArgs e)
+        {
+            List<List<Edge>> euc = LoadedGraph.Euler(true, true);
+
+            ShowNodePathFlyoutMenu(euc);
+        }
+        private void ListSelect_Click(object sender, RoutedEventArgs e)
+        {
+            ColorAllEdges(edges.Values.ToList(), UIEdge.BaseColor);
+
+            List<UIEdge> tocolor = new List<UIEdge>();
+
+            if ((sender as Button)!.Tag is List<Node> clicked)
+                for (int i = 0; i < clicked.Count - 1; i++)
+                    tocolor.Add(edges[LoadedGraph.Edges.First(x => (x.A == clicked[i] && x.B == clicked[i + 1]) || (x.B == clicked[i] && x.A == clicked[i + 1]))]);
+            else
+                ((sender as Button)!.Tag as List<Edge>)!.ForEach(x => tocolor.Add(edges[x]));
+
+
+            for (int i = 0; i < tocolor.Count; i++)
+                tocolor[i].SetColor(new SolidColorBrush(Rainbow((float)i / (float)tocolor.Count)));
+
+        }
+
+        void ShowNodePathFlyoutMenu(List<List<Node>> paths)
+        {
+            Flyout fly = new Flyout();
+            fly.Placement = FlyoutPlacementMode.Top;
+
+            StackPanel spmain = new StackPanel();
+            fly.Content = spmain;
+            fly.Closed += NodePathFlyout_Closed;
+
+            TextBlock tb = new TextBlock() { Text = "Select one of the paths to show:", Margin = new Thickness(0, 0, 0, 10) };
+            spmain.Children.Add(tb);
+
+            if (!paths.Any())
+                tb.Text = "No paths Found!";
+
+            ScrollViewer sw = new ScrollViewer() { MaxHeight = 200 };
+            spmain.Children.Add(sw);
+
+            StackPanel sp = new StackPanel();
+            sw.Content = sp;
+
+            foreach (List<Node> list in paths)
+            {
+                Button bt = new Button();
+                string content = "";
+                list.ForEach(x => content += LoadedGraph.Nodes.IndexOf(x) + " ");
+                bt.Content = content;
+                sp.Children.Add(bt);
+                bt.Tag = list;
+                bt.Click += ListSelect_Click;
+                bt.HorizontalAlignment = HorizontalAlignment.Center;
+            }
+
+            fly.ShowAt(GraphCanvas, new FlyoutShowOptions() { Position = new Point(GraphCanvas.ActualWidth / 2, GraphCanvas.ActualHeight / 2) });
+        }
+        void ShowNodePathFlyoutMenu(List<List<Edge>> paths)
+        {
+            Flyout fly = new Flyout();
+            fly.Placement = FlyoutPlacementMode.Top;
+
+            StackPanel spmain = new StackPanel();
+            fly.Content = spmain;
+            fly.Closed += NodePathFlyout_Closed;
+
+            TextBlock tb = new TextBlock() { Text = "Select one of the paths to show:", Margin = new Thickness(0, 0, 0, 10) };
+            spmain.Children.Add(tb);
+
+            if (!paths.Any())
+                tb.Text = "No paths Found!";
+
+            ScrollViewer sw = new ScrollViewer() { MaxHeight = 200 };
+            spmain.Children.Add(sw);
+
+            StackPanel sp = new StackPanel();
+            sw.Content = sp;
+
+            foreach (List<Edge> list in paths)
+            {
+                Button bt = new Button();
+                string content = "";
+                list.ForEach(x => content += LoadedGraph.Edges.IndexOf(x) + " ");
+                bt.Content = content;
+                sp.Children.Add(bt);
+                bt.Tag = list;
+                bt.Click += ListSelect_Click;
+                bt.HorizontalAlignment = HorizontalAlignment.Center;
+            }
+
+            fly.ShowAt(GraphCanvas, new FlyoutShowOptions() { Position = new Point(GraphCanvas.ActualWidth / 2, GraphCanvas.ActualHeight / 2) });
+        }
+
+        private void NodePathFlyout_Closed(object? sender, object e)
+        {
+            Flyout f = (Flyout)sender!;
+            StackPanel spmain = (StackPanel)f.Content;
+            ScrollViewer sw = (ScrollViewer)spmain.Children.First(x => x is ScrollViewer);
+            StackPanel sp = (StackPanel)sw.Content;
+            foreach (Button b in sp.Children.OfType<Button>())
+                b.Click -= ListSelect_Click;
+
+            f.Closed -= NodePathFlyout_Closed;
+            f = null!;
+        }
+        #endregion
 
         #region Workaround stuff
         [ComImport]

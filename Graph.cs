@@ -3,6 +3,7 @@ using System.Text;
 using System.IO;
 using System;
 using System.Linq;
+using System.Globalization;
 
 
 namespace Graphing
@@ -43,8 +44,8 @@ namespace Graphing
             {
                 string name = buffer[i].Split(' ')[1].Trim().Replace("_"," ");
                 int value = int.Parse(buffer[i].Split(' ')[2].Trim());
-                int Xpos = int.Parse(buffer[i].Split(' ')[3].Trim());
-                int Ypos = int.Parse(buffer[i].Split(' ')[4].Trim());
+                double Xpos = double.Parse(buffer[i].Split(' ')[3].Trim(), CultureInfo.InvariantCulture);
+                double Ypos = double.Parse(buffer[i].Split(' ')[4].Trim(), CultureInfo.InvariantCulture);
                 Node toadd = new Node()
                 {
                     Name = name,
@@ -123,7 +124,11 @@ namespace Graphing
                 {
                     List<Node> neighbors = g.Edges.Where(x => x.A == current || x.B == current).Select(x => x.A == current ? x.B : x.A).ToList();
                     if (neighbors.Contains(curr.First()))
+                    {
+                        found.Add(curr.First());
                         res.Add(found);
+                    }
+                        
                 }
                 else
                     res.Add(found);
@@ -145,39 +150,39 @@ namespace Graphing
         {
             List<Edge> curr = new List<Edge>();
             List<List<Edge>> res = new List<List<Edge>>();
-            foreach (Edge node in g.Edges)
-            {
-                curr.Add(node);
-                EulerDFS(g, curr, node, res, returnallpaths, cycle);
-                curr.Remove(node);
-            }
+            foreach (Node n in g.Nodes)
+                EulerDFS(g, curr, n, res, returnallpaths, cycle);
+
             return res;
         }
-        static void EulerDFS(Graph g, List<Edge> curr, Edge current, List<List<Edge>> res, bool returnallpaths, bool cycle)
+        static void EulerDFS(Graph g, List<Edge> curr, Node current, List<List<Edge>> res, bool returnallpaths, bool cycle)
         {
             if (res.Any() && !returnallpaths)
                 return;
-            if (curr.Count == g.Nodes.Count)
+            if (curr.Count == g.Edges.Count)
             {
                 List<Edge> found = new List<Edge>(curr);
                 if (cycle)
                 {
-                    List<Edge> neighbors = g.Edges.Where(x => x.A == current.A || x.B == current.B).ToList();
+                    List<Edge> neighbors = g.Edges.Where(x => (x.A == current || x.B == current)).ToList();
                     if (neighbors.Contains(curr.First()))
+                    {
+                        found.Add(curr.First()); 
                         res.Add(found);
+                    }                   
                 }
                 else
                     res.Add(found);
             }
             else
             {
-                List<Edge> neighbors = g.Edges.Where(x => x.A == current.A || x.B == current.B).ToList();
+                List<Edge> neighbors = g.Edges.Where(x => (x.A == current || x.B == current)).ToList();
                 foreach (Edge e in neighbors)
                 {
                     if (curr.Contains(e))
                         continue;
                     curr.Add(e);
-                    EulerDFS(g, curr, e, res, returnallpaths, cycle);
+                    EulerDFS(g, curr, e.A == current ? e.B : e.A, res, returnallpaths, cycle);
                     curr.Remove(e);
                 }
             }

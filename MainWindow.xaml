@@ -83,15 +83,23 @@
                         <MenuFlyoutItem Text="Color"
                                         x:Name="ColorButton"
                                         Click="Color_Click"
-                                        Background="#FF71ABF9" />
+                                        Background="#4b03a3" />
                         <MenuFlyoutItem Text="Hamilton"
                                         x:Name="HamiltonButton"
-                                        Click="Color_Click"
-                                        Background="#FF71ABF9" />
+                                        Click="Hamilton_Click"
+                                        Background="#a8e600" />
+                        <MenuFlyoutItem Text="Hamilton Cycle"
+                                        x:Name="HamiltonCButton"
+                                        Click="HamiltonCycle_Click"
+                                        Background="#dbff7a" />
                         <MenuFlyoutItem Text="Euler"
                                         x:Name="EulerButton"
-                                        Click="Color_Click"
-                                        Background="#FF71ABF9" />
+                                        Click="Euler_Click"
+                                        Background="#072ca6" />
+                        <MenuFlyoutItem Text="Euler Cycle"
+                                        x:Name="EulerCButton"
+                                        Click="EulerCycle_Click"
+                                        Background="#527aff" />
                     </MenuFlyout>
                 </DropDownButton.Flyout>
             </DropDownButton>

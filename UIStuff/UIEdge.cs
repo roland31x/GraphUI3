@@ -21,12 +21,13 @@ namespace GraphUI3
     #nullable enable
     public class UIEdge : IDeletable
     {
+        public readonly static Brush BaseColor = new SolidColorBrush(Color.FromArgb(255, 150, 150, 150));
         public Edge Child { get; private set; }
         public int Value { get => Child.Weight;  set { Child.Weight = value; WeightCalc(); } }
 
         public UINode A;
         public UINode B;
-        public Line LineBody { get; private set; } = new Line() { Stroke = new SolidColorBrush(Color.FromArgb(255, 150, 150, 150)), StrokeThickness = 5, Fill = new SolidColorBrush(Colors.Black) };
+        public Line LineBody { get; private set; } = new Line() { Stroke = BaseColor, StrokeThickness = 5, Fill = new SolidColorBrush(Colors.Black) };
         public TextBlock WeightLabel { get; private set; }
 
 
@@ -47,6 +48,10 @@ namespace GraphUI3
             MoveTo(b.Location.X, b.Location.Y, b);
 
             SpawnOn(parent);
+        }
+        public void SetColor(Brush b)
+        {
+            LineBody.Stroke = b;
         }
         void SpawnOn(Canvas canvas)
         {
