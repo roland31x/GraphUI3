@@ -287,6 +287,8 @@ namespace GraphUI3
             {
                 sw.Write(LoadedGraph.ToString());
             }
+
+            changes = false;
             return true;
         }
         private async void SaveFile_Click(object sender, RoutedEventArgs e) => await SaveGraph();
