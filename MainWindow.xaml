@@ -111,53 +111,54 @@
                                 Content="Algorithms"
                                 Margin="0,5,20,0">
                     <DropDownButton.Flyout>
-                        <MenuFlyout Placement="Bottom">
-                            <MenuFlyoutItem Text="Color"
-                                            x:Name="ColorButton"
-                                            Click="Color_Click"
-                                            Background="#4b03a3" />
+                        <Flyout Placement="Bottom">
+                            <StackPanel>
+                                <Button Content="Color"
+                                        x:Name="ColorButton"
+                                        Click="Color_Click"
+                                        Background="#4b03a3" />
 
-                            <MenuFlyoutItem Text="Hamilton"
-                                            x:Name="HamiltonButton"
-                                            Click="Hamilton_Click"
-                                            Background="#58a600" />
+                                <Button Content="Hamilton"
+                                        x:Name="HamiltonButton"
+                                        Click="Hamilton_Click"
+                                        Background="#58a600" />
 
-                            <MenuFlyoutItem Text="Hamilton Cycle"
-                                            x:Name="HamiltonCButton"
-                                            Click="HamiltonCycle_Click"
-                                            Background="#88a600" />
+                                <Button Content="Hamilton Cycle"
+                                        x:Name="HamiltonCButton"
+                                        Click="HamiltonCycle_Click"
+                                        Background="#88a600" />
 
-                            <MenuFlyoutItem Text="Euler"
-                                            x:Name="EulerButton"
-                                            Click="Euler_Click"
-                                            Background="#072ca6" />
+                                <Button Content="Euler"
+                                        x:Name="EulerButton"
+                                        Click="Euler_Click"
+                                        Background="#072ca6" />
 
-                            <MenuFlyoutItem Text="Euler Cycle"
-                                            x:Name="EulerCButton"
-                                            Click="EulerCycle_Click"
-                                            Background="#527aff" />
+                                <Button Content="Euler Cycle"
+                                        x:Name="EulerCButton"
+                                        Click="EulerCycle_Click"
+                                        Background="#527aff" />
 
-                            <MenuFlyoutItem Text="Kruskal"
-                                            x:Name="KruskalButton"
-                                            Click="Kruskal_Click"
-                                            Background="#d9003a">
-                                <ToolTipService.ToolTip>
-                                    <ToolTip>
+                                <Button Content="Kruskal"
+                                        x:Name="KruskalButton"
+                                        Click="Kruskal_Click"
+                                        Background="#d9003a">
+                                    <ToolTipService.ToolTip>
+                                        <ToolTip>
+                                            <TextBlock>
+                                                 Transforms your graph into a minimum spanning tree!
+                                                 <LineBreak />
+                                                 <LineBreak />
+                                                 Make sure the graph is not disconnected!
+                                                 <LineBreak />
+                                                 *Works if graph has no edges.
+                                            </TextBlock>
+                                        </ToolTip>
+                                    </ToolTipService.ToolTip>
 
-                                        <TextBlock>
-                                    Transforms your graph into a minimum spanning tree!
-                                    <LineBreak />
-                                    <LineBreak />
-                                    Make sure you the graph is not disconnected!
-                                    <LineBreak />
-                                    *Works if graph has no edges.
-                                        </TextBlock>
-
-                                    </ToolTip>
-                                </ToolTipService.ToolTip>
-
-                            </MenuFlyoutItem>
-                        </MenuFlyout>
+                                </Button>
+                            </StackPanel>
+                           
+                        </Flyout>
                     </DropDownButton.Flyout>
                 </DropDownButton>
 

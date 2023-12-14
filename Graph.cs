@@ -218,11 +218,11 @@ namespace Graphing
             List<Edge> curr = new List<Edge>();
             List<List<Edge>> res = new List<List<Edge>>();
             foreach (Node n in g.Nodes)
-                EulerDFS(g, curr, n, res, returnallpaths, cycle);
+                EulerDFS(g, curr, n, res, returnallpaths, cycle, n);
 
             return res;
         }
-        static void EulerDFS(Graph g, List<Edge> curr, Node current, List<List<Edge>> res, bool returnallpaths, bool cycle)
+        static void EulerDFS(Graph g, List<Edge> curr, Node current, List<List<Edge>> res, bool returnallpaths, bool cycle, Node start)
         {
             if (res.Any() && !returnallpaths)
                 return;
@@ -231,8 +231,7 @@ namespace Graphing
                 List<Edge> found = new List<Edge>(curr);
                 if (cycle)
                 {
-                    List<Edge> neighbors = g.Edges.Where(x => (x.A == current || x.B == current)).ToList();
-                    if (neighbors.Any() && neighbors.Contains(curr.First()))
+                    if (current == start)
                     {
                         found.Add(curr.First()); 
                         res.Add(found);
@@ -249,7 +248,7 @@ namespace Graphing
                     if (curr.Contains(e))
                         continue;
                     curr.Add(e);
-                    EulerDFS(g, curr, e.A == current ? e.B : e.A, res, returnallpaths, cycle);
+                    EulerDFS(g, curr, e.A == current ? e.B : e.A, res, returnallpaths, cycle, start);
                     curr.Remove(e);
                 }
             }
