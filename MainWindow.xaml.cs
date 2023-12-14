@@ -44,7 +44,7 @@ namespace GraphUI3
 
         string LoadedPath = "";
         Graph _g = new Graph("UntitledGraph");
-        public Graph LoadedGraph { get => _g; set { _g = value; Title = "GraphUI3 - " + LoadedPath + " " + _g.Name; ReInitOnGraph(); } }
+        public Graph LoadedGraph { get => _g; set { _g = value; TitleBlock.Text = "GraphUI3 - " + LoadedPath + " " + _g.Name; ReInitOnGraph(); } }
         
         public Dictionary<Node,UINode> nodes = new Dictionary<Node, UINode>();
         public Dictionary<Edge,UIEdge> edges = new Dictionary<Edge, UIEdge>();
@@ -61,9 +61,9 @@ namespace GraphUI3
             { 
                 _c = value;
                 if (_c)
-                    Title = "GraphUI3 - " + LoadedPath + " " + _g.Name + "*";
+                    TitleBlock.Text = "GraphUI3 - " + LoadedPath + " " + _g.Name + "*";
                 else
-                    Title = "GraphUI3 - " + LoadedPath + " " + _g.Name;                     
+                    TitleBlock.Text = "GraphUI3 - " + LoadedPath + " " + _g.Name;                     
             } 
         }
         public static List<Brush> colors = new List<Brush>() { new SolidColorBrush(Colors.Red), new SolidColorBrush(Colors.Orange), new SolidColorBrush(Colors.Yellow), new SolidColorBrush(Colors.Yellow), new SolidColorBrush(Colors.LimeGreen), new SolidColorBrush(Colors.Green), new SolidColorBrush(Colors.Cyan), new SolidColorBrush(Colors.Blue), new SolidColorBrush(Colors.Purple) };
@@ -71,7 +71,8 @@ namespace GraphUI3
         public MainWindow()
         {
             InitializeComponent();
-            Title = "GraphUI3 - " + LoadedPath + _g.Name + "*";           
+            ExtendsContentIntoTitleBar = true;
+            TitleBlock.Text = "GraphUI3 - " + LoadedPath + _g.Name + "*";           
         }
         void ReInitOnGraph()
         {            

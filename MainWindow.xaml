@@ -7,7 +7,8 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
-    Title="GraphUI3">
+    Title="GraphUI3"
+    >
     <Grid x:Name="MainGrid"
           PointerMoved="MainGrid_PointerMoved">
 
@@ -18,133 +19,151 @@
         <Canvas x:Name="GraphCanvas">
             
         </Canvas>
+        <StackPanel>
+            <RelativePanel x:Name="AppTitleBar"
+                           Background="{StaticResource SystemControlForegroundBaseLowBrush}"
+                           MinHeight="32">
+                <Image x:Name="AppIcon"
+                       Height="20"
+                       Width="20"
+                       Source="ms-appx:///Assets/graphicon.png"
+                       Margin="7,0,0,0"
+                       RelativePanel.AlignVerticalCenterWithPanel="True"/>
+                <TextBlock x:Name="TitleBlock"
+                           Margin="10,0,0,1"
+                           RelativePanel.AlignVerticalCenterWithPanel="True"
+                           RelativePanel.RightOf="AppIcon"
+                           Text="HELLO APP"/>
+
+            </RelativePanel>
+            <RelativePanel x:Name="AppPanel">
+
+                <!--<Button Content="ADD NODE"
+            FontSize="20"
+            Click="NewNode_Click"
+            Background="#FF94FF65"
+            BorderBrush="Gray"
+            BorderThickness="2,2,2,2"
+            Foreground="Black"
+            RelativePanel.AlignTopWithPanel="True"
+            RelativePanel.AlignHorizontalCenterWithPanel="True"
+            Margin="0,20,0,20" />-->
+
+                <MenuBar x:Name="FileMenuBar"
+                         RelativePanel.AlignLeftWithPanel="True">
+                    <MenuBarItem Title="File">
+                        <MenuFlyoutItem Text="Reset"
+                                        Click="Reset_Click" />
+                        <MenuFlyoutItem Text="New"
+                                        Click="New_Click" />
+                        <MenuFlyoutItem Text="Open..."
+                                        Click="LoadFile_Click" />
+                        <MenuFlyoutItem Text="Save"
+                                        Click="SaveFile_Click" />
+                        <MenuFlyoutItem Text="Save As..."
+                                        Click="SaveAsFile_Click" />
+                        <MenuFlyoutItem Text="Exit"
+                                        Click="Exit_Click" />
+                    </MenuBarItem>
+                </MenuBar>
+
+                <DropDownButton x:Name="RawButton"
+                                Content="Raw"
+                                RelativePanel.RightOf="FileMenuBar"
+                                Margin="5,4,5,0"
+                                Click="RawButton_Click">
+                    <DropDownButton.Flyout>
+                        <Flyout>
+                            <StackPanel>
+                                <RichTextBlock>
+                                    <Paragraph>
+                                        <Run x:Name="GraphInfo">
+
+                                        </Run>
+                                    </Paragraph>
+                                </RichTextBlock>
+                                <Button Content="Copy to Clipboard"
+                                        Click="RawToClipboard_Click"
+                                        HorizontalAlignment="Center" />
+                            </StackPanel>
+                        </Flyout>
+                    </DropDownButton.Flyout>
+                </DropDownButton>
+
+                <MenuBar x:Name="HelpMenuBar"
+                         RelativePanel.RightOf="RawButton">
+                    <MenuBarItem Title="Edit">
+                        <MenuFlyoutItem Text="Reset Colors"
+                                        Click="ResetColors_Click" />
+                        <MenuFlyoutItem Text="Reset Weights"
+                                        Click="ResetWeights_Click" />
+                        <MenuFlyoutItem Text="Auto Set Weights To Distance"
+                                        Click="AutoWeights_Click" />
+                    </MenuBarItem>
+                    <MenuBarItem Title="Help">
+                        <MenuFlyoutItem Text="About" />
+                    </MenuBarItem>
+
+                </MenuBar>
+
+                <DropDownButton x:Name="AlgoButton"
+                                RelativePanel.AlignRightWithPanel="True"
+                                Content="Algorithms"
+                                Margin="0,5,20,0">
+                    <DropDownButton.Flyout>
+                        <MenuFlyout Placement="Bottom">
+                            <MenuFlyoutItem Text="Color"
+                                            x:Name="ColorButton"
+                                            Click="Color_Click"
+                                            Background="#4b03a3" />
+
+                            <MenuFlyoutItem Text="Hamilton"
+                                            x:Name="HamiltonButton"
+                                            Click="Hamilton_Click"
+                                            Background="#58a600" />
+
+                            <MenuFlyoutItem Text="Hamilton Cycle"
+                                            x:Name="HamiltonCButton"
+                                            Click="HamiltonCycle_Click"
+                                            Background="#88a600" />
+
+                            <MenuFlyoutItem Text="Euler"
+                                            x:Name="EulerButton"
+                                            Click="Euler_Click"
+                                            Background="#072ca6" />
+
+                            <MenuFlyoutItem Text="Euler Cycle"
+                                            x:Name="EulerCButton"
+                                            Click="EulerCycle_Click"
+                                            Background="#527aff" />
+
+                            <MenuFlyoutItem Text="Kruskal"
+                                            x:Name="KruskalButton"
+                                            Click="Kruskal_Click"
+                                            Background="#d9003a">
+                                <ToolTipService.ToolTip>
+                                    <ToolTip>
+
+                                        <TextBlock>
+                                    Transforms your graph into a minimum spanning tree!
+                                    <LineBreak />
+                                    <LineBreak />
+                                    Make sure you the graph is not disconnected!
+                                    <LineBreak />
+                                    *Works if graph has no edges.
+                                        </TextBlock>
+
+                                    </ToolTip>
+                                </ToolTipService.ToolTip>
+
+                            </MenuFlyoutItem>
+                        </MenuFlyout>
+                    </DropDownButton.Flyout>
+                </DropDownButton>
+
+            </RelativePanel>
+        </StackPanel>
         
-        <RelativePanel>
-
-            <!--<Button Content="ADD NODE"
-                    FontSize="20"
-                    Click="NewNode_Click"
-                    Background="#FF94FF65"
-                    BorderBrush="Gray"
-                    BorderThickness="2,2,2,2"
-                    Foreground="Black"
-                    RelativePanel.AlignTopWithPanel="True"
-                    RelativePanel.AlignHorizontalCenterWithPanel="True"
-                    Margin="0,20,0,20" />--> 
-
-            <MenuBar x:Name="FileMenuBar"
-                     RelativePanel.AlignLeftWithPanel="True">
-                <MenuBarItem Title="File">
-                    <MenuFlyoutItem Text="Reset"
-                                    Click="Reset_Click" />
-                    <MenuFlyoutItem Text="New"
-                                    Click="New_Click" />
-                    <MenuFlyoutItem Text="Open..."
-                                    Click="LoadFile_Click" />
-                    <MenuFlyoutItem Text="Save"
-                                    Click="SaveFile_Click" />
-                    <MenuFlyoutItem Text="Save As..."
-                                    Click="SaveAsFile_Click" />
-                    <MenuFlyoutItem Text="Exit"
-                                    Click="Exit_Click" />
-                </MenuBarItem>
-            </MenuBar>
-
-            <DropDownButton x:Name="RawButton"
-                            Content="Raw"
-                            RelativePanel.RightOf="FileMenuBar"
-                            Margin="5,4,5,0"
-                            Click="RawButton_Click">
-                <DropDownButton.Flyout>
-                    <Flyout>
-                        <StackPanel>
-                            <RichTextBlock>
-                                <Paragraph>
-                                    <Run x:Name="GraphInfo">
-
-                                    </Run>
-                                </Paragraph>
-                            </RichTextBlock>
-                            <Button Content="Copy to Clipboard"
-                                    Click="RawToClipboard_Click"
-                                    HorizontalAlignment="Center" />
-                        </StackPanel>
-                    </Flyout>
-                </DropDownButton.Flyout>
-            </DropDownButton>
-
-            <MenuBar x:Name="HelpMenuBar"
-                     RelativePanel.RightOf="RawButton">
-                <MenuBarItem Title="Edit">
-                    <MenuFlyoutItem Text="Reset Colors"
-                                    Click="ResetColors_Click" />
-                    <MenuFlyoutItem Text="Reset Weights"
-                                    Click="ResetWeights_Click" />
-                    <MenuFlyoutItem Text="Auto Set Weights To Distance"
-                                    Click="AutoWeights_Click" />
-                </MenuBarItem>
-                <MenuBarItem Title="Help">
-                    <MenuFlyoutItem Text="About" />
-                </MenuBarItem>
-                
-            </MenuBar>
-
-            <DropDownButton x:Name="AlgoButton"
-                            RelativePanel.AlignRightWithPanel="True"
-                            Content="Algorithms"
-                            Margin="0,20,20,0">
-                <DropDownButton.Flyout>
-                    <MenuFlyout Placement="Bottom">
-                        <MenuFlyoutItem Text="Color"
-                                        x:Name="ColorButton"
-                                        Click="Color_Click"
-                                        Background="#4b03a3" />
-                        
-                        <MenuFlyoutItem Text="Hamilton"
-                                        x:Name="HamiltonButton"
-                                        Click="Hamilton_Click"
-                                        Background="#58a600" />
-                        
-                        <MenuFlyoutItem Text="Hamilton Cycle"
-                                        x:Name="HamiltonCButton"
-                                        Click="HamiltonCycle_Click"
-                                        Background="#88a600" />
-                        
-                        <MenuFlyoutItem Text="Euler"
-                                        x:Name="EulerButton"
-                                        Click="Euler_Click"
-                                        Background="#072ca6" />
-                        
-                        <MenuFlyoutItem Text="Euler Cycle"
-                                        x:Name="EulerCButton"
-                                        Click="EulerCycle_Click"
-                                        Background="#527aff" />
-
-                        <MenuFlyoutItem Text="Kruskal"
-                                        x:Name="KruskalButton"
-                                        Click="Kruskal_Click"
-                                        Background="#d9003a" >
-                            <ToolTipService.ToolTip>
-                                <ToolTip>
-
-                                    <TextBlock>
-                                            Transforms your graph into a minimum spanning tree!
-                                            <LineBreak />
-                                            <LineBreak />
-                                            Make sure you the graph is not disconnected!
-                                            <LineBreak />
-                                            *Works if graph has no edges.
-                                    </TextBlock>
-
-                                </ToolTip>
-                            </ToolTipService.ToolTip>
-
-                        </MenuFlyoutItem>
-                    </MenuFlyout>
-                </DropDownButton.Flyout>
-            </DropDownButton>
-
-        </RelativePanel>
         <InfoBar x:Name="MainInfoBar" 
                  IsOpen="False"
                  Severity="Error"
