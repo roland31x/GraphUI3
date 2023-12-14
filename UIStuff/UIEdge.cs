@@ -22,9 +22,10 @@ namespace GraphUI3
     #nullable enable
     public class UIEdge : IDeletable
     {
+        public static bool AutoDist = false;
         public readonly static Brush BaseColor = new SolidColorBrush(Color.FromArgb(255, 150, 150, 150));
         public Edge Child { get; private set; }
-        public double Value { get => Child.Weight;  set { Child.Weight = value; WeightCalc(); } }
+        public double Value { get => Child.Weight; set { Child.Weight = value; WeightCalc(); } }
 
         public UINode A;
         public UINode B;
@@ -78,6 +79,8 @@ namespace GraphUI3
             tb.Header = "Weight:";
             tb.Margin = new Thickness(0, 0, 0, 10);
             tb.TextChanged += Tb_TextChanged;
+            if (UIEdge.AutoDist)
+                tb.IsEnabled = false;
 
             sp.Children.Add(tb);
 
@@ -117,13 +120,13 @@ namespace GraphUI3
         }
 
         private void DeleteEdge_Click(object sender, RoutedEventArgs e) => SendDeleteRequest();
-        public void SetWeight(int value) => Value = value;
+        public void SetWeight(double value) => Value = value;
         void WeightCalc()
         {
             if (Value == 0)
                 WeightLabel.Text = "";
             else
-                WeightLabel.Text = Value.ToString();
+                WeightLabel.Text = Math.Round(Value,2).ToString();
         }
         
        

@@ -61,7 +61,7 @@ namespace Graphing
             {
                 int a = int.Parse(buffer[i].Split(' ')[0].Trim());
                 int b = int.Parse(buffer[i].Split(' ')[1].Trim());
-                int weight = int.Parse(buffer[i].Split(' ')[2].Trim());
+                double weight = double.Parse(buffer[i].Split(' ')[2].Trim(), CultureInfo.InvariantCulture);
                 Edge toadd = new Edge(toreturn.Nodes[a], toreturn.Nodes[b])
                 {
                     Weight = weight,
@@ -75,10 +75,14 @@ namespace Graphing
     }
     public static class GraphExt
     {
-        static double Dist(Point a, Point b) => Math.Sqrt((a.X - b.X) * (a.X - b.X) + (a.Y - b.Y) * (a.Y - b.Y));
+        public static double Dist(Node a, Node b) => Dist(new Point(a.X, a.Y), new Point(b.X, b.Y));
+        public static double Dist(Point a, Point b) => Math.Sqrt((a.X - b.X) * (a.X - b.X) + (a.Y - b.Y) * (a.Y - b.Y));
         public static List<Edge> Kruskal(this Graph g)
         {
             List<Edge> MinimumSpanningTree = new List<Edge>();
+
+            if (!g.Nodes.Any())
+                return MinimumSpanningTree;
 
             List<Edge> SortedEdges = new List<Edge>();
 
@@ -130,6 +134,9 @@ namespace Graphing
                     MinimumSpanningTree.Remove(next);
 
             }
+
+            if(SubGraphs.First().Count != g.Nodes.Count)
+                MinimumSpanningTree.Clear();
 
             return MinimumSpanningTree;
         }
@@ -225,7 +232,7 @@ namespace Graphing
                 if (cycle)
                 {
                     List<Edge> neighbors = g.Edges.Where(x => (x.A == current || x.B == current)).ToList();
-                    if (neighbors.Contains(curr.First()))
+                    if (neighbors.Any() && neighbors.Contains(curr.First()))
                     {
                         found.Add(curr.First()); 
                         res.Add(found);

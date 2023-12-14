@@ -16,6 +16,7 @@
         </Canvas>
 
         <Canvas x:Name="GraphCanvas">
+            
         </Canvas>
         
         <RelativePanel>
@@ -49,29 +50,38 @@
                 </MenuBarItem>
             </MenuBar>
 
-            <DropDownButton x:Name="ViewButton"
-                            Content="View"
+            <DropDownButton x:Name="RawButton"
+                            Content="Raw"
                             RelativePanel.RightOf="FileMenuBar"
                             Margin="5,4,5,0"
-                            Click="ViewButton_Click">
+                            Click="RawButton_Click">
                 <DropDownButton.Flyout>
                     <Flyout>
-                        <RichTextBlock>
-                            <Paragraph>
-                                <Run x:Name="GraphInfo">
+                        <StackPanel>
+                            <RichTextBlock>
+                                <Paragraph>
+                                    <Run x:Name="GraphInfo">
 
-                                </Run>
-                            </Paragraph>
-                        </RichTextBlock>
+                                    </Run>
+                                </Paragraph>
+                            </RichTextBlock>
+                            <Button Content="Copy to Clipboard"
+                                    Click="RawToClipboard_Click"
+                                    HorizontalAlignment="Center" />
+                        </StackPanel>
                     </Flyout>
                 </DropDownButton.Flyout>
             </DropDownButton>
 
             <MenuBar x:Name="HelpMenuBar"
-                     RelativePanel.RightOf="ViewButton">
+                     RelativePanel.RightOf="RawButton">
                 <MenuBarItem Title="Edit">
                     <MenuFlyoutItem Text="Reset Colors"
                                     Click="ResetColors_Click" />
+                    <MenuFlyoutItem Text="Reset Weights"
+                                    Click="ResetWeights_Click" />
+                    <MenuFlyoutItem Text="Auto Set Weights To Distance"
+                                    Click="AutoWeights_Click" />
                 </MenuBarItem>
                 <MenuBarItem Title="Help">
                     <MenuFlyoutItem Text="About" />
@@ -93,12 +103,12 @@
                         <MenuFlyoutItem Text="Hamilton"
                                         x:Name="HamiltonButton"
                                         Click="Hamilton_Click"
-                                        Background="#a8e600" />
+                                        Background="#58a600" />
                         
                         <MenuFlyoutItem Text="Hamilton Cycle"
                                         x:Name="HamiltonCButton"
                                         Click="HamiltonCycle_Click"
-                                        Background="#dbff7a" />
+                                        Background="#88a600" />
                         
                         <MenuFlyoutItem Text="Euler"
                                         x:Name="EulerButton"
@@ -113,13 +123,35 @@
                         <MenuFlyoutItem Text="Kruskal"
                                         x:Name="KruskalButton"
                                         Click="Kruskal_Click"
-                                        Background="#527aff" />
+                                        Background="#d9003a" >
+                            <ToolTipService.ToolTip>
+                                <ToolTip>
+
+                                    <TextBlock>
+                                            Transforms your graph into a minimum spanning tree!
+                                            <LineBreak />
+                                            <LineBreak />
+                                            Make sure you the graph is not disconnected!
+                                            <LineBreak />
+                                            *Works if graph has no edges.
+                                    </TextBlock>
+
+                                </ToolTip>
+                            </ToolTipService.ToolTip>
+
+                        </MenuFlyoutItem>
                     </MenuFlyout>
                 </DropDownButton.Flyout>
             </DropDownButton>
 
         </RelativePanel>
-        
+        <InfoBar x:Name="MainInfoBar" 
+                 IsOpen="False"
+                 Severity="Error"
+                 Title="Error"
+                 Message="Essential app message for your users to be informed of, acknowledge, or take action on."
+                 HorizontalAlignment="Center"
+                 VerticalAlignment="Top"/>
     </Grid>
     
 </Window>

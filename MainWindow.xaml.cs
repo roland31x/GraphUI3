@@ -31,6 +31,7 @@ using Graphing;
 using Windows.UI.Input;
 using Microsoft.UI.Xaml.Shapes;
 using Windows.UI;
+using Windows.ApplicationModel.DataTransfer;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -190,12 +191,54 @@ namespace GraphUI3
             else
                 held = null;
         }
-        private void ResetColors_Click(object sender, RoutedEventArgs e)
+        private void MainGrid_PointerMoved(object sender, PointerRoutedEventArgs e)
         {
-            nodes.Values.ToList().ForEach(x => x.SetColor(UINode.BaseBodyColor));
-            edges.Values.ToList().ForEach(x => x.SetColor(UIEdge.BaseColor));
+            if (held == null)
+                return;
+
+            double xpos = e.GetCurrentPoint(MainGrid).Position.X;
+            double ypos = e.GetCurrentPoint(MainGrid).Position.Y;
+
+            if (xpos < 0)
+                xpos = 0;
+            if (ypos < 0)
+                ypos = 0;
+            if (ypos > GraphCanvas.ActualHeight)
+                ypos = GraphCanvas.ActualHeight;
+            if (xpos > GraphCanvas.ActualWidth)
+                xpos = GraphCanvas.ActualWidth;
+
+            held.MoveTo(xpos, ypos);
+            changes = true;
+
+            foreach (UIEdge edge in edges.Values.Where(x => x.A == held || x.B == held))
+                edge.MoveTo(xpos, ypos, held);
         }
 
+        private void ResetWeights_Click(object sender, RoutedEventArgs e)
+        {
+            edges.Values.ToList().ForEach(x => x.SetWeight(0));
+        }
+        private async void AutoWeights_Click(object sender, RoutedEventArgs e)
+        {
+            if (UIEdge.AutoDist)
+            {
+                UIEdge.AutoDist = false;
+                (sender as MenuFlyoutItem)!.Background = new SolidColorBrush(Colors.Transparent);
+                return;
+            }
+
+            (sender as MenuFlyoutItem)!.Background = new SolidColorBrush(Colors.Purple);
+            UIEdge.AutoDist = true;
+            while (UIEdge.AutoDist)
+            {
+                edges.Values.ToList().ForEach(x => x.SetWeight(GraphExt.Dist(x.Child.A, x.Child.B)));
+                await Task.Delay(100);
+            }
+            
+        }
+
+        #region FILE INPUT/OUTPUT
         async Task<bool> Reset(bool force = false)
         {
             if (changes && !force)
@@ -297,31 +340,6 @@ namespace GraphUI3
         }
         private async void SaveFile_Click(object sender, RoutedEventArgs e) => await SaveGraph();
         private async void SaveAsFile_Click(object sender, RoutedEventArgs e) => await SaveAsGraph();
-
-        private void MainGrid_PointerMoved(object sender, PointerRoutedEventArgs e)
-        {
-            if (held == null)
-                return;
-            
-            double xpos = e.GetCurrentPoint(MainGrid).Position.X;
-            double ypos = e.GetCurrentPoint(MainGrid).Position.Y;
-
-            if (xpos < 0)
-                xpos = 0;
-            if (ypos < 0)
-                ypos = 0;
-            if (ypos > GraphCanvas.ActualHeight)
-                ypos = GraphCanvas.ActualHeight;
-            if (xpos > GraphCanvas.ActualWidth)
-                xpos = GraphCanvas.ActualWidth;
-
-            held.MoveTo(xpos, ypos);
-            changes = true;
-
-            foreach (UIEdge edge in edges.Values.Where(x => x.A == held || x.B == held))
-                edge.MoveTo(xpos, ypos, held);
-        }
-
         private async Task<bool> ShowSaveDialog()
         {
             ContentDialog dialog = new ContentDialog();
@@ -349,13 +367,29 @@ namespace GraphUI3
                 return;
             Close();
         }
+        #endregion
 
-        private void ViewButton_Click(object sender, RoutedEventArgs e) => GraphInfo.Text = LoadedGraph.ToString();
+        #region RAW INFO 
+        private void RawToClipboard_Click(object sender, RoutedEventArgs args)
+        {
+            var package = new DataPackage();
+            package.SetText(LoadedGraph.ToString());
+            Clipboard.SetContent(package);
+        }
+        private void RawButton_Click(object sender, RoutedEventArgs e) => GraphInfo.Text = LoadedGraph.ToString();
+        #endregion
+
+        #region COLORING
+        private void ResetColors_Click(object sender, RoutedEventArgs e)
+        {
+            nodes.Values.ToList().ForEach(x => x.SetColor(UINode.BaseBodyColor));
+            edges.Values.ToList().ForEach(x => x.SetColor(UIEdge.BaseColor));
+        }
         void ColorAllEdges(List<UIEdge> edges, Brush b) => edges.ForEach(x => x.SetColor(b));
 
         public Color Rainbow(float progress)
         {
-            float div = (Math.Abs(progress % 1) * 6);
+            float div = (Math.Abs(progress % 1) * 5);
             int ascending = (int)((div % 1) * 255);
             int descending = 255 - ascending;
 
@@ -369,12 +403,11 @@ namespace GraphUI3
                     return Color.FromArgb(255, 0, 255, (byte)ascending);
                 case 3:
                     return Color.FromArgb(255, 0, (byte)descending, 255);
-                case 4:
+                default: // case 4
                     return Color.FromArgb(255, (byte)ascending, 0, 255);
-                default: // case 5:
-                    return Color.FromArgb(255, 255, 0, (byte)descending);
             }
         }
+        #endregion
 
         #region ALGORITHMS
         private void Color_Click(object sender, RoutedEventArgs e)
@@ -514,6 +547,11 @@ namespace GraphUI3
         private async void Kruskal_Click(object sender, RoutedEventArgs e)
         {
             List<Edge> mst = LoadedGraph.Kruskal();
+            if (!mst.Any())
+            {
+                MainInfoBar.IsOpen = true;
+                MainInfoBar.Message = "No minimum spanning tree found! Graph is disconnected!";
+            }
             Graph newgraph = new Graph(LoadedGraph.Name);
             foreach (Node n in nodes.Keys)
                 newgraph.Nodes.Add(n);
