@@ -195,8 +195,13 @@ namespace GraphUI3
                 LoadedGraph.Edges.Add(graphedge);
 
                 UIEdge toadd = new UIEdge(graphedge, selection.First(), selection.Last(), GraphCanvas);
-                toadd.DeleteRequest += DeleteEdge;
-                edges.Add(graphedge, toadd);
+
+                // remove this once i implement multiple edges between same pair of nodes
+                if (!edges.Values.Where(x => (x.A == toadd.A && x.B == toadd.B) || (x.A == toadd.B && x.B == toadd.A)).Any())
+                {
+                    toadd.DeleteRequest += DeleteEdge;
+                    edges.Add(graphedge, toadd);
+                }
 
                 foreach (UINode node in selection)
                     node.ResetSelect();
@@ -709,7 +714,7 @@ namespace GraphUI3
 
         private async void GitHubDocs_Click(object sender, RoutedEventArgs e)
         {
-            _ = await Windows.System.Launcher.LaunchUriAsync(new Uri(@"https://www.microsoft.com/"));
+            _ = await Windows.System.Launcher.LaunchUriAsync(new Uri(@"https://github.com/roland31x/GraphUI3/blob/master/README.md"));
         }
 
         #region Workaround stuff
