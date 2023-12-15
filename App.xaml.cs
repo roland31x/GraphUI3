@@ -6,6 +6,7 @@ using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
 using Microsoft.UI.Xaml.Shapes;
+using Microsoft.Windows.AppLifecycle;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -15,6 +16,7 @@ using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.Storage;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -30,6 +32,7 @@ namespace GraphUI3
         /// Initializes the singleton application object.  This is the first line of authored code
         /// executed, and as such is the logical equivalent of main() or WinMain().
         /// </summary>
+        public string LaunchPath { get; set; }
         public App()
         {
             this.InitializeComponent();
@@ -41,8 +44,14 @@ namespace GraphUI3
         /// <param name="args">Details about the launch request and process.</param>
         protected override void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
         {
-            m_window = new MainWindow();
+            AppActivationArguments appActivationArguments = Microsoft.Windows.AppLifecycle.AppInstance.GetCurrent().GetActivatedEventArgs();
+
+            if (appActivationArguments.Kind is ExtendedActivationKind.File && appActivationArguments.Data is IFileActivatedEventArgs fileActivatedEventArgs && fileActivatedEventArgs.Files.FirstOrDefault() is IStorageFile storageFile)
+                LaunchPath = storageFile.Path;
+
+            m_window = new MainWindow(LaunchPath);
             m_window.Activate();
+           
         }
 
         private Window m_window;

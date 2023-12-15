@@ -7,8 +7,8 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
-    Title="GraphUI3"
-    >
+    Title="GraphUI3">
+    
     <Grid x:Name="MainGrid"
           PointerMoved="MainGrid_PointerMoved">
 
@@ -37,17 +37,6 @@
 
             </RelativePanel>
             <RelativePanel x:Name="AppPanel">
-
-                <!--<Button Content="ADD NODE"
-            FontSize="20"
-            Click="NewNode_Click"
-            Background="#FF94FF65"
-            BorderBrush="Gray"
-            BorderThickness="2,2,2,2"
-            Foreground="Black"
-            RelativePanel.AlignTopWithPanel="True"
-            RelativePanel.AlignHorizontalCenterWithPanel="True"
-            Margin="0,20,0,20" />-->
 
                 <MenuBar x:Name="FileMenuBar"
                          RelativePanel.AlignLeftWithPanel="True">
@@ -111,37 +100,73 @@
                                 Content="Algorithms"
                                 Margin="0,5,20,0">
                     <DropDownButton.Flyout>
-                        <Flyout Placement="Bottom">
+                        <Flyout x:Name="AlgoFlyout" Placement="Bottom">
                             <StackPanel>
+                                <TextBlock Text="Coloring:" 
+                                           Margin="0,0,0,5"
+                                           HorizontalAlignment="Center"/> 
+                                
                                 <Button Content="Color"
                                         x:Name="ColorButton"
                                         Click="Color_Click"
-                                        Background="#4b03a3" />
+                                        Background="#4b03a3" 
+                                        Width="150"/>
+                                
+                                <TextBlock Text="Elementary Paths:" 
+                                           Margin="0,5,0,5"
+                                           HorizontalAlignment="Center"/>
 
-                                <Button Content="Hamilton"
+                                <ToggleSwitch OffContent="First Path Only"
+                                              OnContent="All Paths"
+                                              Width="150"
+                                              Margin="0,0,0,10"
+                                              Toggled="AllPathToggleSwitch_Toggled"
+                                              x:Name="AllPathToggleSwitch">
+                                    <ToolTipService.ToolTip>
+                                        <ToolTip>
+                                            <TextBlock>
+                                                Returning all possible paths can be slow in big graphs!
+                                                <LineBreak />
+                                                It is currently limited to 100 paths, to not overload the memory.
+                                            </TextBlock>
+                                        </ToolTip>
+                                    </ToolTipService.ToolTip>
+
+                                </ToggleSwitch>
+
+                                <Button Content="Hamilton Path"
                                         x:Name="HamiltonButton"
                                         Click="Hamilton_Click"
-                                        Background="#58a600" />
+                                        Background="#58a600"
+                                        Width="150"
+                                        />
 
                                 <Button Content="Hamilton Cycle"
                                         x:Name="HamiltonCButton"
                                         Click="HamiltonCycle_Click"
-                                        Background="#88a600" />
+                                        Background="#88a600"
+                                        Width="150"/>
 
-                                <Button Content="Euler"
+                                <Button Content="Euler Path"
                                         x:Name="EulerButton"
                                         Click="Euler_Click"
-                                        Background="#072ca6" />
+                                        Background="#072ca6"
+                                        Width="150"/>
 
                                 <Button Content="Euler Cycle"
                                         x:Name="EulerCButton"
                                         Click="EulerCycle_Click"
-                                        Background="#527aff" />
+                                        Background="#527aff"
+                                        Width="150"/>
 
+                                <TextBlock Text="Spanning Trees:"
+                                           Margin="0,5,0,5"
+                                           HorizontalAlignment="Center"/>
                                 <Button Content="Kruskal"
                                         x:Name="KruskalButton"
                                         Click="Kruskal_Click"
-                                        Background="#d9003a">
+                                        Background="#d9003a"
+                                        Width="150">
                                     <ToolTipService.ToolTip>
                                         <ToolTip>
                                             <TextBlock>
@@ -172,6 +197,15 @@
                  Message="Essential app message for your users to be informed of, acknowledge, or take action on."
                  HorizontalAlignment="Center"
                  VerticalAlignment="Top"/>
+        <Grid x:Name="Overlay" 
+              Background="Gray" 
+              Opacity="0.33" 
+              Visibility="Collapsed">
+            <ProgressRing x:Name="LoadingRing" 
+                          IsActive="false"
+                          MinHeight="200"
+                          MinWidth="200"/>
+        </Grid>
     </Grid>
     
 </Window>

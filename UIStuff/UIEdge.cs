@@ -16,24 +16,27 @@ using Windows.Foundation;
 using Graphing;
 using Windows.UI;
 using System.Globalization;
+using GraphUI3.UIStuff;
 
 namespace GraphUI3
 {
     #nullable enable
-    public class UIEdge : IDeletable
+    public class UIEdge : IDeletable, IChangeable
     {
         public static bool AutoDist = false;
         public readonly static Brush BaseColor = new SolidColorBrush(Color.FromArgb(255, 150, 150, 150));
-        public Edge Child { get; private set; }
-        public double Value { get => Child.Weight; set { Child.Weight = value; WeightCalc(); } }
 
-        public UINode A;
-        public UINode B;
+        public Edge Child { get; private set; }
+        public double Value { get => Child.Weight; set { Child.Weight = value; WeightCalc(); ChangedEvent?.Invoke(this, new EventArgs()); } }
+
+        public UINode A { get; }
+        public UINode B { get; }
         public Line LineBody { get; private set; } = new Line() { Stroke = BaseColor, StrokeThickness = 5, Fill = new SolidColorBrush(Colors.Black) };
         public TextBlock WeightLabel { get; private set; }
 
 
-        public event IDeletable.DeletionRequestHandler? DeleteRequest; 
+        public event IDeletable.DeletionRequestHandler? DeleteRequest;
+        public event IChangeable.ChangedEventHandler? ChangedEvent;
         public void SendDeleteRequest() => DeleteRequest?.Invoke(this, new DeletionEventArgs(GetAllElements()));
         List<UIElement> GetAllElements() => new List<UIElement>() { LineBody, WeightLabel };
 
@@ -51,6 +54,7 @@ namespace GraphUI3
 
             SpawnOn(parent);
         }
+
         public void SetColor(Brush b)
         {
             LineBody.Stroke = b;

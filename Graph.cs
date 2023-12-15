@@ -6,6 +6,7 @@ using System.Linq;
 using System.Globalization;
 using Windows.Data.Xml.Dom;
 using Windows.Foundation;
+using System.Threading.Tasks;
 
 
 namespace Graphing
@@ -77,12 +78,12 @@ namespace Graphing
     {
         public static double Dist(Node a, Node b) => Dist(new Point(a.X, a.Y), new Point(b.X, b.Y));
         public static double Dist(Point a, Point b) => Math.Sqrt((a.X - b.X) * (a.X - b.X) + (a.Y - b.Y) * (a.Y - b.Y));
-        public static List<Edge> Kruskal(this Graph g)
+        public static Task<List<Edge>> Kruskal(this Graph g)
         {
             List<Edge> MinimumSpanningTree = new List<Edge>();
 
             if (!g.Nodes.Any())
-                return MinimumSpanningTree;
+                return Task.FromResult(MinimumSpanningTree);
 
             List<Edge> SortedEdges = new List<Edge>();
 
@@ -138,9 +139,9 @@ namespace Graphing
             if(SubGraphs.First().Count != g.Nodes.Count)
                 MinimumSpanningTree.Clear();
 
-            return MinimumSpanningTree;
+            return Task.FromResult(MinimumSpanningTree);
         }
-        public static Dictionary<Node, int> GraphColor(this Graph g)
+        public static Task<Dictionary<Node, int>> GraphColor(this Graph g)
         {
             Dictionary<Node, int> colored = new Dictionary<Node, int>();           
 
@@ -166,9 +167,9 @@ namespace Graphing
                         
             }
 
-            return colored;
+            return Task.FromResult(colored);
         }
-        public static List<List<Node>> Hamilton(this Graph g, bool returnallpaths, bool cycle)
+        public static Task<List<List<Node>>> Hamilton(this Graph g, bool returnallpaths, bool cycle)
         {
             List<Node> curr = new List<Node>();
             List<List<Node>> res = new List<List<Node>>();
@@ -178,11 +179,13 @@ namespace Graphing
                 HamDFS(g, curr, node, res, returnallpaths, cycle);
                 curr.Remove(node);
             }
-            return res;
+            return Task.FromResult(res);
         }
         static void HamDFS(Graph g, List<Node> curr, Node current, List<List<Node>> res, bool returnallpaths, bool cycle)
         {
             if (res.Any() && !returnallpaths)
+                return;
+            else if (res.Count > 100)
                 return;
             if (curr.Count == g.Nodes.Count)
             {
@@ -213,18 +216,20 @@ namespace Graphing
                 }
             }
         }
-        public static List<List<Edge>> Euler(this Graph g, bool returnallpaths, bool cycle)
+        public static Task<List<List<Edge>>> Euler(this Graph g, bool returnallpaths, bool cycle)
         {
             List<Edge> curr = new List<Edge>();
             List<List<Edge>> res = new List<List<Edge>>();
             foreach (Node n in g.Nodes)
                 EulerDFS(g, curr, n, res, returnallpaths, cycle, n);
 
-            return res;
+            return Task.FromResult(res);
         }
         static void EulerDFS(Graph g, List<Edge> curr, Node current, List<List<Edge>> res, bool returnallpaths, bool cycle, Node start)
         {
             if (res.Any() && !returnallpaths)
+                return;
+            else if (res.Count > 100)
                 return;
             if (curr.Count == g.Edges.Count)
             {

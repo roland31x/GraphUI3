@@ -10,25 +10,27 @@ using System.Collections.Generic;
 using Windows.Foundation;
 using Graphing;
 using System.Reflection.Metadata.Ecma335;
+using GraphUI3.UIStuff;
 
 namespace GraphUI3
 {
 #nullable enable
-    public class UINode : IDeletable
+    public class UINode : IDeletable, IChangeable
     {
         public static readonly Brush BaseBodyColor = new SolidColorBrush(Color.FromArgb(255, 40, 40, 40));
         public Node Child { get; private set; } 
-        public int Value { get => Child.Value; private set => Child.Value = value; }
+        public int Value { get => Child.Value; private set { Child.Value = value; ChangedEvent?.Invoke(this, new System.EventArgs()); } }
         public string Name 
         { 
             get => Child.Name; 
             private set 
             { 
                 Child.Name = value; 
-                NameLabel.Text = value; 
+                NameLabel.Text = value;
+                ChangedEvent?.Invoke(this, new System.EventArgs());
             } 
         }
-        public Point Location { get => new Point(Child.X, Child.Y); private set { Child.X = value.X; Child.Y = value.Y; } }
+        public Point Location { get => new Point(Child.X, Child.Y); private set { Child.X = value.X; Child.Y = value.Y; ChangedEvent?.Invoke(this, new System.EventArgs()); } }
 
         readonly static SolidColorBrush SelectedOutline = new SolidColorBrush(Colors.Red);
         readonly static SolidColorBrush DeselectedOutline = new SolidColorBrush(Color.FromArgb(255, 150, 150, 150));
@@ -76,7 +78,7 @@ namespace GraphUI3
         public delegate void SelectionHandler(object sender, SelectionEventArgs e);
         public event SelectionHandler? OnSelect;
 
-
+        public event IChangeable.ChangedEventHandler? ChangedEvent;
         public event IDeletable.DeletionRequestHandler? DeleteRequest;
         public void SendDeleteRequest() => DeleteRequest?.Invoke(this, new DeletionEventArgs(GetAllElements()));
         public List<UIElement> GetAllElements() => new List<UIElement>() { Body, BodyHitBox, SelectionBorder, NameLabel };

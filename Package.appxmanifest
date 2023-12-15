@@ -43,6 +43,18 @@
         <uap:InitialRotationPreference>
           <uap:Rotation Preference="landscape"/></uap:InitialRotationPreference>
       </uap:VisualElements>
+      <Extensions>
+        <uap:Extension Category="windows.fileTypeAssociation">
+          <uap:FileTypeAssociation Name="grph">
+            <uap:SupportedFileTypes>
+              <uap:FileType>.grph</uap:FileType>
+            </uap:SupportedFileTypes>
+            <uap:DisplayName>GraphUI3</uap:DisplayName>
+            <uap:Logo>Assets\graphicon.png</uap:Logo>
+            <uap:EditFlags OpenIsSafe="true"/>
+          </uap:FileTypeAssociation>
+        </uap:Extension>
+      </Extensions>
     </Application>
   </Applications>
 

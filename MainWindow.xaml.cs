@@ -40,18 +40,32 @@ namespace GraphUI3
 {
     public sealed partial class MainWindow : Window
     {
+        #region static stuff
         public static Random rng = new Random();
+        public static List<Brush> colors = new List<Brush>() 
+        { 
+            new SolidColorBrush(Colors.Red), 
+            new SolidColorBrush(Colors.Orange), 
+            new SolidColorBrush(Colors.Yellow), 
+            new SolidColorBrush(Colors.Yellow), 
+            new SolidColorBrush(Colors.LimeGreen), 
+            new SolidColorBrush(Colors.Green), 
+            new SolidColorBrush(Colors.Cyan), 
+            new SolidColorBrush(Colors.Blue), 
+            new SolidColorBrush(Colors.Purple) 
+        };
+        #endregion
 
         string LoadedPath = "";
         Graph _g = new Graph("UntitledGraph");
         public Graph LoadedGraph { get => _g; set { _g = value; TitleBlock.Text = "GraphUI3 - " + LoadedPath + " " + _g.Name; ReInitOnGraph(); } }
-        
+       
         public Dictionary<Node,UINode> nodes = new Dictionary<Node, UINode>();
         public Dictionary<Edge,UIEdge> edges = new Dictionary<Edge, UIEdge>();
-
         UINode? held = null;
-
         List<UINode> selection = new List<UINode>();
+
+        bool FindAllPaths = false;
 
         bool _c = true;
         bool changes 
@@ -66,14 +80,57 @@ namespace GraphUI3
                     TitleBlock.Text = "GraphUI3 - " + LoadedPath + " " + _g.Name;                     
             } 
         }
-        public static List<Brush> colors = new List<Brush>() { new SolidColorBrush(Colors.Red), new SolidColorBrush(Colors.Orange), new SolidColorBrush(Colors.Yellow), new SolidColorBrush(Colors.Yellow), new SolidColorBrush(Colors.LimeGreen), new SolidColorBrush(Colors.Green), new SolidColorBrush(Colors.Cyan), new SolidColorBrush(Colors.Blue), new SolidColorBrush(Colors.Purple) };
+
+        bool _l = false;
+        DispatcherTimer stucktimer = new DispatcherTimer() { Interval = TimeSpan.FromSeconds(5) };
+        bool loading
+        {
+            get => _l;
+            set
+            {
+                _l = value;
+                if (_l)
+                {
+                    stucktimer.Start();
+                    Overlay.Visibility = Visibility.Visible;
+                    LoadingRing.IsActive = true;
+                }
+                else
+                {
+                    stucktimer.Stop();
+                    Overlay.Visibility = Visibility.Collapsed;
+                    LoadingRing.IsActive = false;
+                }
+            }
+        }
         
-        public MainWindow()
+        public MainWindow(string path)
         {
             InitializeComponent();
             ExtendsContentIntoTitleBar = true;
-            TitleBlock.Text = "GraphUI3 - " + LoadedPath + _g.Name + "*";           
+            stucktimer.Tick += Stucktimer_Tick;
+
+            if(path == null)
+                TitleBlock.Text = "GraphUI3 -  " + LoadedPath + _g.Name + "*";
+            else
+            {
+                LoadedPath = path;
+                LoadedGraph = Graph.ParseFile(LoadedPath);
+                LoadedGraph.Name = path.Split('\\').Last().Replace(".grph", "");
+                changes = false;
+            }
+
         }
+
+        private async void Stucktimer_Tick(object? sender, object e)
+        {
+            stucktimer.Stop();
+            if (await ShowStuckDialog())
+                Close();
+            if(loading)
+                stucktimer.Start();
+        }
+
         void ReInitOnGraph()
         {            
             foreach(Node n in LoadedGraph.Nodes)
@@ -82,13 +139,14 @@ namespace GraphUI3
                 toadd.Move += MoveNode;
                 toadd.OnSelect += SelectNode;
                 toadd.DeleteRequest += DeleteNode;
-
+                toadd.ChangedEvent += ChangedEvent;
                 nodes.Add(n, toadd);
             }
             foreach(Edge e in LoadedGraph.Edges)
             {
                 UIEdge toadd = new UIEdge(e, nodes[e.A], nodes[e.B], GraphCanvas);
                 toadd.DeleteRequest += DeleteEdge;
+                toadd.ChangedEvent += ChangedEvent;
                 edges.Add(e, toadd);
             }
         }
@@ -111,15 +169,17 @@ namespace GraphUI3
             toadd.Move += MoveNode;
             toadd.OnSelect += SelectNode;
             toadd.DeleteRequest += DeleteNode;
+            toadd.ChangedEvent += ChangedEvent;
 
             nodes.Add(graphnode, toadd);
-
             changes = true;
 
             return toadd;
         }
+
+        private void ChangedEvent(object sender, EventArgs e) => changes = true;
+
         private void GraphCanvas_DoubleTapped(object sender, DoubleTappedRoutedEventArgs e) => NewNode(e.GetPosition(GraphCanvas).X, e.GetPosition(GraphCanvas).Y);
-        //private void NewNode_Click(object sender, RoutedEventArgs e) => NewNode();
 
         private void SelectNode(object sender, SelectionEventArgs e)
         {
@@ -152,6 +212,7 @@ namespace GraphUI3
             UIEdge edge = (UIEdge)sender;
 
             edge.DeleteRequest -= DeleteEdge;
+            edge.ChangedEvent -= ChangedEvent;
 
             foreach (UIElement element in e.ToRemove)
                 GraphCanvas.Children.Remove(element);
@@ -168,6 +229,7 @@ namespace GraphUI3
             todelete.DeleteRequest -= DeleteNode;
             todelete.Move -= MoveNode;
             todelete.OnSelect -= SelectNode;
+            todelete.ChangedEvent -= ChangedEvent;
 
             foreach(UIElement element in e.ToRemove)
                 GraphCanvas.Children.Remove(element);   
@@ -210,7 +272,6 @@ namespace GraphUI3
                 xpos = GraphCanvas.ActualWidth;
 
             held.MoveTo(xpos, ypos);
-            changes = true;
 
             foreach (UIEdge edge in edges.Values.Where(x => x.A == held || x.B == held))
                 edge.MoveTo(xpos, ypos, held);
@@ -237,6 +298,13 @@ namespace GraphUI3
                 await Task.Delay(100);
             }
             
+        }
+        private void AllPathToggleSwitch_Toggled(object sender, RoutedEventArgs e)
+        {
+            if (AllPathToggleSwitch.IsOn)
+                FindAllPaths = true;
+            else
+                FindAllPaths = false;
         }
 
         #region FILE INPUT/OUTPUT
@@ -351,6 +419,8 @@ namespace GraphUI3
             dialog.SecondaryButtonText = "Don't Save";
             dialog.CloseButtonText = "Cancel";
             dialog.DefaultButton = ContentDialogButton.Primary;
+            dialog.HorizontalAlignment = HorizontalAlignment.Center;
+            dialog.HorizontalContentAlignment = HorizontalAlignment.Center;
 
             ContentDialogResult result = await dialog.ShowAsync();
             if(result == ContentDialogResult.Primary)
@@ -362,6 +432,32 @@ namespace GraphUI3
                 return true;
             return false;
         }
+
+        private async Task<bool> ShowStuckDialog()
+        {
+            ContentDialog dialog = new ContentDialog();
+
+            dialog.XamlRoot = MainGrid.XamlRoot;
+            dialog.Title = $"Oops, looks like you started a hefty algorithm...{Environment.NewLine}The program might be stuck for a while, consider saving and quitting.";
+            dialog.PrimaryButtonText = "Save & Quit";
+            dialog.SecondaryButtonText = "Quit without saving";
+            dialog.CloseButtonText = "Wait";
+            dialog.DefaultButton = ContentDialogButton.Primary;
+            dialog.HorizontalAlignment = HorizontalAlignment.Center;
+            dialog.HorizontalContentAlignment = HorizontalAlignment.Center;
+
+            ContentDialogResult result = await dialog.ShowAsync();
+            if (result == ContentDialogResult.Primary)
+            {
+                changes = false;
+                await SaveGraph();
+                return true;
+            }
+            else if (result == ContentDialogResult.Secondary)
+                return true;
+            return false;
+        }
+
         private async void Exit_Click(object sender, RoutedEventArgs e)
         {
             if (changes && !await ShowSaveDialog())
@@ -411,35 +507,61 @@ namespace GraphUI3
         #endregion
 
         #region ALGORITHMS
-        private void Color_Click(object sender, RoutedEventArgs e)
+        private async void Color_Click(object sender, RoutedEventArgs e)
         {
-            Dictionary<Node, int> colored = LoadedGraph.GraphColor();
+            loading = true;
+            AlgoFlyout.Hide();
+
+            Dictionary<Node, int> colored = await Task.Run(() => LoadedGraph.GraphColor());
+
             foreach (Node node in colored.Keys)
-                nodes[node].BodyColor = colors[colored[node]];
+                nodes[node].SetColor(colors[colored[node]]);
+
+            loading = false;
         }
-        private void Hamilton_Click(object sender, RoutedEventArgs e)
+        private async void Hamilton_Click(object sender, RoutedEventArgs e)
         {
-            List<List<Node>> ham = LoadedGraph.Hamilton(false, false);
+            loading = true;
+            AlgoFlyout.Hide();
+
+            List<List<Node>> ham = await Task.Run(() => LoadedGraph.Hamilton(returnallpaths: FindAllPaths, cycle: false));         
 
             ShowNodePathFlyoutMenu(ham);
+
+            loading = false;
         }       
 
-        private void HamiltonCycle_Click(object sender, RoutedEventArgs e)
+        private async void HamiltonCycle_Click(object sender, RoutedEventArgs e)
         {
-            List<List<Node>> hamc = LoadedGraph.Hamilton(false, true);
+            loading = true;
+            AlgoFlyout.Hide();
+
+            List<List<Node>> hamc = await Task.Run(() => LoadedGraph.Hamilton(returnallpaths: FindAllPaths, cycle: true));
+
+            loading = false;
 
             ShowNodePathFlyoutMenu(hamc);
         }
 
-        private void Euler_Click(object sender, RoutedEventArgs e)
+        private async void Euler_Click(object sender, RoutedEventArgs e)
         {
-            List<List<Edge>> eup = LoadedGraph.Euler(false, false);
+            loading = true;
+            AlgoFlyout.Hide();
+
+            List<List<Edge>> eup = await Task.Run(() => LoadedGraph.Euler(returnallpaths: FindAllPaths, cycle: false));
+
+            loading = false;
 
             ShowNodePathFlyoutMenu(eup);
         }
-        private void EulerCycle_Click(object sender, RoutedEventArgs e)
+        private async void EulerCycle_Click(object sender, RoutedEventArgs e)
         {
-            List<List<Edge>> euc = LoadedGraph.Euler(false, true);
+            loading = true; 
+            AlgoFlyout.Hide();
+
+            List<List<Edge>> euc = await Task.Run(() => LoadedGraph.Euler(returnallpaths: FindAllPaths, cycle: true));
+
+            loading = false;
 
             ShowNodePathFlyoutMenu(euc);
         }
@@ -547,7 +669,10 @@ namespace GraphUI3
 
         private async void Kruskal_Click(object sender, RoutedEventArgs e)
         {
-            List<Edge> mst = LoadedGraph.Kruskal();
+            loading = true; 
+            AlgoFlyout.Hide();
+
+            List<Edge> mst = await Task.Run(() => LoadedGraph.Kruskal());
             if (!mst.Any())
             {
                 MainInfoBar.IsOpen = true;
@@ -557,9 +682,12 @@ namespace GraphUI3
             foreach (Node n in nodes.Keys)
                 newgraph.Nodes.Add(n);
             mst.ForEach(x => newgraph.Edges.Add(x));
+
             await Reset(true);
             LoadedGraph = newgraph;
             changes = true;
+
+            loading = false;
         }
         #endregion
 
@@ -579,8 +707,8 @@ namespace GraphUI3
         {
             IntPtr WindowHandle { get; }
         }
-        #endregion
 
+        #endregion
 
     }
 }
