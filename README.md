@@ -76,9 +76,13 @@ Right clicking on an edge brings up its options menu where you can change its we
 
 ![image](https://github.com/roland31x/GraphUI3/assets/115028239/0187f633-439a-464d-be05-b862b529b74c)
 
-The difference between creating a new graph and resetting current is when you already have a graph loaded from file, resetting keeps file path, creating a new one will require you to assign a path to it when saving.
-Resetting the colors doesn't affect your graphs traits ( Colors are not saved , they are purely visual )
-Resetting weights converts your current graph to a fully unweighed one.
+2.3.1. The difference between creating a new graph and resetting current is when you already have a graph loaded from file, resetting keeps file path, creating a new one will require you to assign a path to it when saving.
+
+2.3.2. Resetting the colors doesn't affect your graphs traits. ( Colors are not saved , they are purely visual )
+
+2.3.3. Resetting weights converts your current graph to a fully unweighed one.
+
+2.3.4. Auto-Set Weights by Distance will convert your graph to a weighed one where the weights are the pixel distances between nodes. ( updated automatically )
 
 > [!NOTE]
 > In this app edge weight default values are 1, even if edge weight is 0 it is always considered 1 since there cannot be two or more nodes 0 distance apart.
