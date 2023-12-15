@@ -131,6 +131,7 @@ namespace GraphUI3
                 stucktimer.Start();
         }
 
+        #region GRAPH UI MANIPULATION
         void ReInitOnGraph()
         {            
             foreach(Node n in LoadedGraph.Nodes)
@@ -276,7 +277,9 @@ namespace GraphUI3
             foreach (UIEdge edge in edges.Values.Where(x => x.A == held || x.B == held))
                 edge.MoveTo(xpos, ypos, held);
         }
+        #endregion
 
+        #region EDIT BAR STUFF
         private void ResetWeights_Click(object sender, RoutedEventArgs e)
         {
             edges.Values.ToList().ForEach(x => x.SetWeight(0));
@@ -299,13 +302,8 @@ namespace GraphUI3
             }
             
         }
-        private void AllPathToggleSwitch_Toggled(object sender, RoutedEventArgs e)
-        {
-            if (AllPathToggleSwitch.IsOn)
-                FindAllPaths = true;
-            else
-                FindAllPaths = false;
-        }
+        #endregion
+
 
         #region FILE INPUT/OUTPUT
         async Task<bool> Reset(bool force = false)
@@ -476,7 +474,7 @@ namespace GraphUI3
         private void RawButton_Click(object sender, RoutedEventArgs e) => GraphInfo.Text = LoadedGraph.ToString();
         #endregion
 
-        #region COLORING
+        #region UI COLORING
         private void ResetColors_Click(object sender, RoutedEventArgs e)
         {
             nodes.Values.ToList().ForEach(x => x.SetColor(UINode.BaseBodyColor));
@@ -505,6 +503,8 @@ namespace GraphUI3
             }
         }
         #endregion
+
+        #region ALGORITHMS STUFF
 
         #region ALGORITHMS
         private async void Color_Click(object sender, RoutedEventArgs e)
@@ -565,6 +565,32 @@ namespace GraphUI3
 
             ShowNodePathFlyoutMenu(euc);
         }
+        private async void Kruskal_Click(object sender, RoutedEventArgs e)
+        {
+            loading = true;
+            AlgoFlyout.Hide();
+
+            List<Edge> mst = await Task.Run(() => LoadedGraph.Kruskal());
+            if (!mst.Any())
+            {
+                MainInfoBar.IsOpen = true;
+                MainInfoBar.Message = "No minimum spanning tree found! Graph is disconnected!";
+            }
+            Graph newgraph = new Graph(LoadedGraph.Name);
+            foreach (Node n in nodes.Keys)
+                newgraph.Nodes.Add(n);
+            mst.ForEach(x => newgraph.Edges.Add(x));
+
+            await Reset(true);
+            LoadedGraph = newgraph;
+            changes = true;
+
+            loading = false;
+        }
+
+        #endregion
+
+        #region UI AUX
         private void ListSelect_Click(object sender, RoutedEventArgs e)
         {
             ColorAllEdges(edges.Values.ToList(), UIEdge.BaseColor);
@@ -667,29 +693,25 @@ namespace GraphUI3
             f = null!;
         }
 
-        private async void Kruskal_Click(object sender, RoutedEventArgs e)
+        #endregion
+
+        #region SETTINGS
+
+        private void AllPathToggleSwitch_Toggled(object sender, RoutedEventArgs e)
         {
-            loading = true; 
-            AlgoFlyout.Hide();
-
-            List<Edge> mst = await Task.Run(() => LoadedGraph.Kruskal());
-            if (!mst.Any())
-            {
-                MainInfoBar.IsOpen = true;
-                MainInfoBar.Message = "No minimum spanning tree found! Graph is disconnected!";
-            }
-            Graph newgraph = new Graph(LoadedGraph.Name);
-            foreach (Node n in nodes.Keys)
-                newgraph.Nodes.Add(n);
-            mst.ForEach(x => newgraph.Edges.Add(x));
-
-            await Reset(true);
-            LoadedGraph = newgraph;
-            changes = true;
-
-            loading = false;
+            if (AllPathToggleSwitch.IsOn)
+                FindAllPaths = true;
+            else
+                FindAllPaths = false;
         }
         #endregion
+
+        #endregion
+
+        private async void GitHubDocs_Click(object sender, RoutedEventArgs e)
+        {
+            _ = await Windows.System.Launcher.LaunchUriAsync(new Uri(@"https://www.microsoft.com/"));
+        }
 
         #region Workaround stuff
         [ComImport]

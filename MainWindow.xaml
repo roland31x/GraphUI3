@@ -41,8 +41,6 @@
                 <MenuBar x:Name="FileMenuBar"
                          RelativePanel.AlignLeftWithPanel="True">
                     <MenuBarItem Title="File">
-                        <MenuFlyoutItem Text="Reset"
-                                        Click="Reset_Click" />
                         <MenuFlyoutItem Text="New"
                                         Click="New_Click" />
                         <MenuFlyoutItem Text="Open..."
@@ -82,6 +80,8 @@
                 <MenuBar x:Name="HelpMenuBar"
                          RelativePanel.RightOf="RawButton">
                     <MenuBarItem Title="Edit">
+                        <MenuFlyoutItem Text="Reset Graph"
+                                        Click="Reset_Click" />
                         <MenuFlyoutItem Text="Reset Colors"
                                         Click="ResetColors_Click" />
                         <MenuFlyoutItem Text="Reset Weights"
@@ -90,9 +90,9 @@
                                         Click="AutoWeights_Click" />
                     </MenuBarItem>
                     <MenuBarItem Title="Help">
-                        <MenuFlyoutItem Text="About" />
+                        <MenuFlyoutItem Text="GitHub Docs" Click="GitHubDocs_Click"/>
                     </MenuBarItem>
-
+                  
                 </MenuBar>
 
                 <DropDownButton x:Name="AlgoButton"
