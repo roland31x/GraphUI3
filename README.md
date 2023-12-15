@@ -114,16 +114,17 @@ Contains various quick editing features of your current loaded graph.
 ![image](https://github.com/roland31x/GraphUI3/assets/115028239/5f70190e-7956-4012-a578-2135821106ad)
 
 *as of ver 1.0.0
-
+##
 ### 3.1. [Coloring](https://en.wikipedia.org/wiki/Graph_coloring)
-
+##
 ### 3.2. Elementary Paths
 
 3.2.1-3.2.2 [Hamilton Path / Cycle](https://en.wikipedia.org/wiki/Hamiltonian_path)
+
 3.2.3-3.2.4 [Euler Path / Cycle](https://en.wikipedia.org/wiki/Eulerian_path)
-
+##
 ### 3.3. Distance Paths (WiP)
-
+##
 ### 3.4. Spanning Trees
 3.4.1 [Minimum Spanning Tree](https://en.wikipedia.org/wiki/Minimum_spanning_tree)
 
