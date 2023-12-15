@@ -11,7 +11,7 @@ If you want to open the app in Visual Studio Community / Pro / Enterprise and se
 
 ## Usage
 
-### 1. The Graphing Area & What is a Graph
+### 1. The Graphing Area & Components
 
 #### 1.1 Nodes
 
@@ -27,7 +27,29 @@ The fundamental unit of which graphs are formed.
 
 ![image](https://github.com/roland31x/GraphUI3/assets/115028239/848d9b5c-aaf4-4771-a123-e571d07e545c)
 
-Right clicking on a node brings up it's option menu where you can give it a name.
+Right clicking on a node brings up it's option menu where you can give it a name or delete it from your graph.
+
+![image](https://github.com/roland31x/GraphUI3/assets/115028239/ba4533dd-c488-4c7d-988a-9c7881487384)
+
+>[!TIP]
+>Double click on an existing node to select it (its border will turn red), a selected node can interact with another selected node.
+
+##
+#### 1.2 Edges 
+
+![image](https://github.com/roland31x/GraphUI3/assets/115028239/6bb00dac-81af-454a-ac1d-5e229f2446c2)
+
+Edges link nodes together, their weight determines the "distance" between nodes.
+
+>[!TIP]
+>Create edges by selecting two distinct nodes.
+
+![image](https://github.com/roland31x/GraphUI3/assets/115028239/036c38d1-acab-4a64-86a2-61d65c5d41e9)
+
+Right clicking on an edge brings up its options menu where you can change its weight or delete it from your graph.
+
+>[!NOTE]
+>Edge weights CANNOT be negative. If set to 0 their weight will not show up in the UI but they are treated as "1".
 
 ##
 ### 2. The App Bar & Title
