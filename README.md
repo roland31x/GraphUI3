@@ -20,17 +20,17 @@ If you want to open the app in Visual Studio Community / Pro / Enterprise and se
 The fundamental unit of which graphs are formed.
 
 >[!TIP]
->Create nodes by double clicking anywhere on the app.
+> Create nodes by double clicking anywhere on the app.
 
 >[!TIP]
->You can move a node around by moving the mouse while holding left click on a node.
+> You can move a node around by moving the mouse while holding left click on a node.
 
 Right clicking on a node brings up it's option menu where you can give it a name or delete it from your graph.
 
 ![image](https://github.com/roland31x/GraphUI3/assets/115028239/848d9b5c-aaf4-4771-a123-e571d07e545c)
 
 >[!TIP]
->Double click on an existing node to select it (its border will turn red), a selected node can interact with another selected node.
+> Double click on an existing node to select it (its border will turn red), a selected node can interact with another selected node.
 
 ![image](https://github.com/roland31x/GraphUI3/assets/115028239/ba4533dd-c488-4c7d-988a-9c7881487384)
 
@@ -41,15 +41,21 @@ Right clicking on a node brings up it's option menu where you can give it a name
 
 Edges link nodes together, their weight determines the "distance" between nodes.
 
->[!TIP]
->Create edges by selecting two distinct nodes.
+> [!TIP]
+> Create edges by selecting two distinct nodes.
+
+> [!IMPORTANT]
+> Loops are not yet supported, you cannot create an edge from the same node to the same node.
+
+> [!IMPORTANT]
+> So far, the app only supports unoriented graphs (WiP).
 
 Right clicking on an edge brings up its options menu where you can change its weight or delete it from your graph.
 
 ![image](https://github.com/roland31x/GraphUI3/assets/115028239/036c38d1-acab-4a64-86a2-61d65c5d41e9)
 
->[!NOTE]
->Edge weights CANNOT be negative. If set to 0 their weight will not show up in the UI but they are treated as "1".
+> [!NOTE]
+> Edge weights CANNOT be negative. If set to 0 their weight will not show up in the UI but they are treated as "1".
 
 ##
 ## 2. The App Bar & Title
@@ -109,13 +115,17 @@ Contains various quick editing features of your current loaded graph.
 
 *as of ver 1.0.0
 
-### 3.1. Coloring
+### 3.1. [Coloring](https://en.wikipedia.org/wiki/Graph_coloring)
 
 ### 3.2. Elementary Paths
+
+3.2.1-3.2.2 [Hamilton Path / Cycle](https://en.wikipedia.org/wiki/Hamiltonian_path)
+3.2.3-3.2.4 [Euler Path / Cycle](https://en.wikipedia.org/wiki/Eulerian_path)
 
 ### 3.3. Distance Paths (WiP)
 
 ### 3.4. Spanning Trees
+3.4.1 [Minimum Spanning Tree](https://en.wikipedia.org/wiki/Minimum_spanning_tree)
 
 
 ## Contributing
