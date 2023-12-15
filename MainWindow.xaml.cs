@@ -304,7 +304,6 @@ namespace GraphUI3
         }
         #endregion
 
-
         #region FILE INPUT/OUTPUT
         async Task<bool> Reset(bool force = false)
         {
