@@ -119,6 +119,8 @@ Contains various quick editing features of your current loaded graph.
 ##
 ### 3.2. Elementary Paths
 
+*The "First Path only" switch sets wether these algorithms should return the full list ( capped at 100 ) existent path ( there can be a lot of them ) or just stop at the first one found. ( to check for existance and visually show it )
+
 3.2.1-3.2.2 [Hamilton Path / Cycle](https://en.wikipedia.org/wiki/Hamiltonian_path)
 
 3.2.3-3.2.4 [Euler Path / Cycle](https://en.wikipedia.org/wiki/Eulerian_path)
