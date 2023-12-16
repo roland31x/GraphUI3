@@ -10,7 +10,7 @@
   <Identity
     Name="47246roland31x.GraphUI3"
     Publisher="CN=9D04748D-B648-4D41-AD6F-98933C74E2B2"
-    Version="1.0.0.0" />
+    Version="1.0.1.0" />
 
   <mp:PhoneIdentity PhoneProductId="5a5fbeac-fc3a-45b6-a5b6-e9f40ccf6a31" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
 
