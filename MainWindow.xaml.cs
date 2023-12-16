@@ -82,7 +82,7 @@ namespace GraphUI3
         }
 
         bool _l = false;
-        DispatcherTimer stucktimer = new DispatcherTimer() { Interval = TimeSpan.FromSeconds(5) };
+        DispatcherTimer stucktimer = new DispatcherTimer() { Interval = TimeSpan.FromSeconds(10) };
         bool loading
         {
             get => _l;

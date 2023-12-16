@@ -8,11 +8,11 @@
   IgnorableNamespaces="uap rescap">
 
   <Identity
-    Name="3ad57925-3cbc-44d5-a731-7574f30ca1ab"
-    Publisher="CN=rolan"
+    Name="47246roland31x.GraphUI3"
+    Publisher="CN=9D04748D-B648-4D41-AD6F-98933C74E2B2"
     Version="1.0.0.0" />
 
-  <mp:PhoneIdentity PhoneProductId="3ad57925-3cbc-44d5-a731-7574f30ca1ab" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
+  <mp:PhoneIdentity PhoneProductId="5a5fbeac-fc3a-45b6-a5b6-e9f40ccf6a31" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
 
   <Properties>
     <DisplayName>GraphUI3</DisplayName>
