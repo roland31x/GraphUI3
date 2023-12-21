@@ -364,7 +364,7 @@ namespace GraphUI3
                 {
                     LoadedGraph = Graph.ParseFile(LoadedPath);
                 }
-                catch(Exception ex)
+                catch(Exception)
                 {
                     ContentDialog dialog = new ContentDialog();
 
