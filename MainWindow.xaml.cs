@@ -360,7 +360,26 @@ namespace GraphUI3
                 LoadedPath = file.Path;
                 changes = false;
                 await Reset();
-                LoadedGraph = Graph.ParseFile(LoadedPath);
+                try
+                {
+                    LoadedGraph = Graph.ParseFile(LoadedPath);
+                }
+                catch(Exception ex)
+                {
+                    ContentDialog dialog = new ContentDialog();
+
+                    dialog.XamlRoot = MainGrid.XamlRoot;
+                    dialog.Title = "Failed to load file!";
+                    dialog.PrimaryButtonText = "Ok";
+
+                    await dialog.ShowAsync();
+
+                    LoadedPath = "";
+                    LoadedGraph = new Graph("UntitledGraph");
+                    changes = true;
+                    return;
+                }
+                
                 LoadedGraph.Name = file.Name.Replace(".grph", "");
                 changes = false;
             }
