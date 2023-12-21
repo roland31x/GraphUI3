@@ -302,7 +302,7 @@ namespace GraphUI3
             UIEdge.AutoDist = true;
             while (UIEdge.AutoDist)
             {
-                edges.Values.ToList().ForEach(x => x.SetWeight(GraphExt.Dist(x.Child.A, x.Child.B)));
+                edges.Values.ToList().ForEach(x => x.SetWeight(GraphExt.EuclidDist(x.Child.A, x.Child.B)));
                 await Task.Delay(100);
             }
             

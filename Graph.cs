@@ -26,14 +26,35 @@ namespace Graphing
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder();
-            sb.Append(Nodes.Count).AppendLine();
+            sb.Append(Nodes.Count)
+              .AppendLine();
             for (int i = 0; i < Nodes.Count; i++)
-                sb.Append(i).Append(' ').Append(Nodes[i].Name == "" ? "_" : Nodes[i].Name.Replace(" ","_")).Append(' ').Append(Nodes[i].Value).Append(' ').Append(Nodes[i].X).Append(' ').Append(Nodes[i].Y).AppendLine();
+            {
+                sb.Append(i)
+                .Append(' ')
+                .Append(Nodes[i].Name == "" ? "_" : Nodes[i].Name
+                .Replace(" ", "_")).Append(' ').Append(Nodes[i].Value)
+                .Append(' ')
+                .Append(Nodes[i].X.ToString(CultureInfo.InvariantCulture))
+                .Append(' ')
+                .Append(Nodes[i].Y.ToString(CultureInfo.InvariantCulture))
+                .AppendLine();
+            }
+                
             HashSet<(int, int, double)> hs = new HashSet<(int, int, double)>();
             foreach (Edge e in Edges)
                 hs.Add((Math.Min(Nodes.IndexOf(e.A), Nodes.IndexOf(e.B)), Math.Max(Nodes.IndexOf(e.A), Nodes.IndexOf(e.B)), e.Weight));
+
             foreach ((int a, int b, double w) in hs)
-                sb.Append(a).Append(' ').Append(b).Append(' ').Append(w).AppendLine();
+            {
+                sb.Append(a)
+                .Append(' ')
+                .Append(b)
+                .Append(' ')
+                .Append(w.ToString(CultureInfo.InvariantCulture))
+                .AppendLine();
+            }
+                
 
             return sb.ToString();
         }
@@ -76,8 +97,8 @@ namespace Graphing
     }
     public static class GraphExt
     {
-        public static double Dist(Node a, Node b) => Dist(new Point(a.X, a.Y), new Point(b.X, b.Y));
-        public static double Dist(Point a, Point b) => Math.Sqrt((a.X - b.X) * (a.X - b.X) + (a.Y - b.Y) * (a.Y - b.Y));
+        public static double EuclidDist(Node a, Node b) => EuclidDist(new Point(a.X, a.Y), new Point(b.X, b.Y));
+        public static double EuclidDist(Point a, Point b) => Math.Sqrt((a.X - b.X) * (a.X - b.X) + (a.Y - b.Y) * (a.Y - b.Y));
         public static Task<List<Edge>> Kruskal(this Graph g)
         {
             List<Edge> MinimumSpanningTree = new List<Edge>();
@@ -92,7 +113,7 @@ namespace Graphing
             else
                 for(int i = 0; i < g.Nodes.Count; i++)
                     for(int j = i + 1; j < g.Nodes.Count; j++)
-                        SortedEdges.Add(new Edge(g.Nodes[i], g.Nodes[j]) { Weight = Dist(new Point(g.Nodes[i].X, g.Nodes[i].Y), new Point(g.Nodes[j].X, g.Nodes[j].Y)) } );
+                        SortedEdges.Add(new Edge(g.Nodes[i], g.Nodes[j]) { Weight = EuclidDist(new Point(g.Nodes[i].X, g.Nodes[i].Y), new Point(g.Nodes[j].X, g.Nodes[j].Y)) } );
 
             SortedEdges.Sort((x,y) => x.Weight.CompareTo(y.Weight));
 
