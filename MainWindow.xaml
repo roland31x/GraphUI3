@@ -181,6 +181,21 @@
                                     </ToolTipService.ToolTip>
 
                                 </Button>
+
+                                <Button Content="Dijkstra"
+                                        x:Name="DijkstraButton"
+                                        Click="Dijkstra_Click"
+                                        Background="#d9003a"
+                                        Width="150">
+                                    <ToolTipService.ToolTip>
+                                        <ToolTip>
+                                            <TextBlock>
+                                                  
+                                            </TextBlock>
+                                        </ToolTip>
+                                    </ToolTipService.ToolTip>
+
+                                </Button>
                             </StackPanel>
                            
                         </Flyout>

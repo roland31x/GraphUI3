@@ -588,6 +588,14 @@ namespace GraphUI3
 
             ShowNodePathFlyoutMenu(euc);
         }
+        private async void Dijkstra_Click(object sender, RoutedEventArgs e)
+        {
+            loading = true;
+            AlgoFlyout.Hide();
+
+            (List<List<Node>> asy, double dist) = await LoadedGraph.Dijkstra(LoadedGraph.Nodes[0], LoadedGraph.Nodes[1]);
+        
+        }
         private async void Kruskal_Click(object sender, RoutedEventArgs e)
         {
             loading = true;

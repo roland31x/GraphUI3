@@ -279,14 +279,68 @@ namespace Graphing
                 }
             }
         }
+
+        public static Task<(List<Node>,double)> Dijkstra(this Graph g, Node start, Node target)
+        {
+            List<Node> result = new List<Node>();
+            double bestdist = -1;
+
+            PriorityQueue<(Node,decimal), decimal> pq = new PriorityQueue<(Node,decimal), decimal>();
+            pq.Enqueue((start,0), 0);
+            while(pq.Count > 0)
+            {
+                (Node deq, decimal dist) = pq.Dequeue();
+                if (deq.Value < (double)dist && deq.Value != 0)
+                    continue;
+                deq.Value = (double)dist;
+                List<Edge> neighbors = g.Edges.Where(x => (x.A == deq || x.B == deq)).ToList();
+                foreach(Edge e in neighbors)
+                {
+                    decimal nextdist = (decimal)(e.Weight == 0 ? 1 : e.Weight);
+                    pq.Enqueue((e.A == deq ? e.B : e.A, nextdist), dist + nextdist);
+                }
+            }
+
+            Dictionary<Node, double> distarray = new Dictionary<Node, double>();
+            g.Nodes.ForEach(n => 
+            { 
+                distarray.Add(n, n.Value);
+                n.Value = -1;
+            });              
+
+            if (target.Value == -1)
+                return Task.FromResult((result, (double)bestdist));
+
+
+            bestdist = target.Value;
+            Node back = target;
+            result.Add(target);
+            while(back != start)
+            {
+                List<Edge> neighbors = g.Edges.Where(x => (x.A == back || x.B == back)).ToList();
+                foreach(Edge e in neighbors)
+                {
+                    Node other = e.A == back ? e.B : e.A;
+                    decimal distbetween = (decimal)distarray[back] - (decimal)distarray[other];
+                    if(e.Weight == (double)distbetween)
+                    {
+                        result.Add(back);
+                        back = other;
+                    }
+                }
+            }
+            result.Add(start);
+
+            return Task.FromResult((result, (double)bestdist));
+        }
     }
     public class Node
     {
-        public int Value { get; set; } = 0;
+        public double Value { get; set; } = -1;
         public string Name { get; set; }
         public double X { get; set; }
         public double Y { get; set; }
-        public Node(int value = 0, string name = "")
+        public Node(int value = -1, string name = "")
         {
             Value = value;
             Name = name;
