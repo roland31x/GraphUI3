@@ -19,7 +19,6 @@ namespace GraphUI3
     {
         public static readonly Brush BaseBodyColor = new SolidColorBrush(Color.FromArgb(255, 40, 40, 40));
         public Node Child { get; private set; } 
-        public double Value { get => Child.Value; private set { Child.Value = value; ChangedEvent?.Invoke(this, new System.EventArgs()); } }
         public string Name 
         { 
             get => Child.Name; 

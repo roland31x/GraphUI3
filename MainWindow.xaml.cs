@@ -63,6 +63,25 @@ namespace GraphUI3
         public Dictionary<Node,UINode> nodes = new Dictionary<Node, UINode>();
         public Dictionary<Edge,UIEdge> edges = new Dictionary<Edge, UIEdge>();
         UINode? held = null;
+
+        bool _ss = false;
+        bool specialselection
+        {
+            get
+            {
+                return _ss;
+            }
+            set
+            {
+                _ss = value;
+                if (_ss)
+                    AlgoButton.IsEnabled = false;
+                else
+                    AlgoButton.IsEnabled = true;
+            }
+        }
+        bool cancelalgo = false;
+
         List<UINode> selection = new List<UINode>();
 
         bool FindAllPaths = false;
@@ -189,7 +208,7 @@ namespace GraphUI3
             else
                 selection.Remove(sender as UINode);
 
-            if(selection.Count == 2)
+            if(selection.Count == 2 && !specialselection)
             {
                 Edge graphedge = new Edge(selection.First().Child, selection.Last().Child);
                 LoadedGraph.Edges.Add(graphedge);
@@ -590,13 +609,70 @@ namespace GraphUI3
         }
         private async void Dijkstra_Click(object sender, RoutedEventArgs e)
         {
-            loading = true;
+            specialselection = true;
             AlgoFlyout.Hide();
 
-            (List<Node> path, double dist) = await LoadedGraph.Dijkstra(LoadedGraph.Nodes[0], LoadedGraph.Nodes[1]);
+            ShowSpecialSelectionInfo();
 
+            while (selection.Count < 2 && !cancelalgo)
+            {
+                await Task.Delay(10);
+            }
 
-        
+            specialselection = false;
+
+            UnloadSpecialSelection();
+            if (cancelalgo)
+            {
+                cancelalgo = false;
+                ShowCancelAlgoInfo();
+               
+                foreach (UINode node in selection)
+                    node.ResetSelect();
+                selection.Clear();
+
+                return;
+            }
+
+            
+
+            Node start = selection.First().Child;
+            Node target = selection.Last().Child;
+            
+            foreach (UINode node in selection)
+                node.ResetSelect();
+            selection.Clear();
+
+            await Task.Delay(100);
+
+            loading = true;
+
+            (List<Node> path, double dist) = await Task.Run(() => LoadedGraph.Dijkstra(start, target));
+
+            Flyout fly = new Flyout();
+
+            StackPanel spmain = new StackPanel();
+            fly.Content = spmain;
+
+            TextBlock tb = new TextBlock() 
+            { 
+                Text = (dist == -1 ? "No path found between the two nodes!." : $"Shortest distance between the two nodes is {dist}."), 
+                Margin = new Thickness(0, 0, 0, 10) 
+            };
+            spmain.Children.Add(tb);
+
+            fly.ShowAt(GraphCanvas, new FlyoutShowOptions() { Position = new Point(GraphCanvas.ActualWidth / 2, GraphCanvas.ActualHeight / 2) });
+
+            ColorAllEdges(edges.Values.ToList(), UIEdge.BaseColor);
+
+            List<UIEdge> tocolor = new List<UIEdge>();
+            for (int i = 0; i < path.Count - 1; i++)
+                tocolor.Add(edges[LoadedGraph.Edges.First(x => (x.A == path[i] && x.B == path[i + 1]) || (x.B == path[i] && x.A == path[i + 1]))]);
+
+            for (int i = 0; i < tocolor.Count; i++)
+                tocolor[i].SetColor(new SolidColorBrush(Rainbow((float)i / (float)tocolor.Count)));
+
+            loading = false;
         }
         private async void Kruskal_Click(object sender, RoutedEventArgs e)
         {
@@ -606,8 +682,12 @@ namespace GraphUI3
             List<Edge> mst = await Task.Run(() => LoadedGraph.Kruskal());
             if (!mst.Any())
             {
+                MainInfoBar.Severity = InfoBarSeverity.Error;
+                MainInfoBar.Title = "Error";
                 MainInfoBar.IsOpen = true;
                 MainInfoBar.Message = "No minimum spanning tree found! Graph is disconnected!";
+                MainInfoBar.IsClosable = true;
+                infoactionbutton.Visibility = Visibility.Collapsed;
             }
             Graph newgraph = new Graph(LoadedGraph.Name);
             foreach (Node n in nodes.Keys)
@@ -620,6 +700,33 @@ namespace GraphUI3
 
             loading = false;
         }
+
+        void ShowCancelAlgoInfo()
+        {
+            MainInfoBar.Severity = InfoBarSeverity.Success;
+            MainInfoBar.Title = "Special Selection";
+            MainInfoBar.Message = "Special Selection deactivated";
+            MainInfoBar.IsOpen = true;
+            infoactionbutton.Visibility = Visibility.Collapsed;
+            MainInfoBar.IsClosable = true;
+        }
+        void ShowSpecialSelectionInfo()
+        {
+            MainInfoBar.Severity = InfoBarSeverity.Informational;
+            MainInfoBar.Title = "Special Selection";
+            MainInfoBar.Message = "Special Selection is active, to disable it press:";
+            MainInfoBar.IsOpen = true;
+            infoactionbutton.Visibility = Visibility.Visible;
+            infoactionbutton.Content = "Cancel Selection";
+            infoactionbutton.Click += StopAlgorithm;
+            MainInfoBar.IsClosable = false;
+        }
+        void UnloadSpecialSelection()
+        {
+            infoactionbutton.Click -= StopAlgorithm;
+            MainInfoBar.IsOpen = false;
+        }
+        void StopAlgorithm(object sender, RoutedEventArgs e) => cancelalgo = true;
 
         #endregion
 

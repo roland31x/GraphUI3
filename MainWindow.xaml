@@ -15,7 +15,7 @@
         <Canvas Background="#100f22"
                 DoubleTapped="GraphCanvas_DoubleTapped">
         </Canvas>
-
+        
         <Canvas x:Name="GraphCanvas">
             
         </Canvas>
@@ -90,9 +90,10 @@
                                         Click="AutoWeights_Click" />
                     </MenuBarItem>
                     <MenuBarItem Title="Help">
-                        <MenuFlyoutItem Text="GitHub Docs" Click="GitHubDocs_Click"/>
+                        <MenuFlyoutItem Text="GitHub Docs"
+                                        Click="GitHubDocs_Click" />
                     </MenuBarItem>
-                  
+
                 </MenuBar>
 
                 <DropDownButton x:Name="AlgoButton"
@@ -100,21 +101,22 @@
                                 Content="Algorithms"
                                 Margin="0,5,20,0">
                     <DropDownButton.Flyout>
-                        <Flyout x:Name="AlgoFlyout" Placement="Bottom">
+                        <Flyout x:Name="AlgoFlyout"
+                                Placement="Bottom">
                             <StackPanel>
-                                <TextBlock Text="Coloring:" 
+                                <TextBlock Text="Coloring:"
                                            Margin="0,0,0,5"
-                                           HorizontalAlignment="Center"/> 
-                                
+                                           HorizontalAlignment="Center" />
+
                                 <Button Content="Color"
                                         x:Name="ColorButton"
                                         Click="Color_Click"
-                                        Background="#4b03a3" 
-                                        Width="150"/>
-                                
-                                <TextBlock Text="Elementary Paths:" 
+                                        Background="#4b03a3"
+                                        Width="150" />
+
+                                <TextBlock Text="Elementary Paths:"
                                            Margin="0,5,0,5"
-                                           HorizontalAlignment="Center"/>
+                                           HorizontalAlignment="Center" />
 
                                 <ToggleSwitch OffContent="First Path Only"
                                               OnContent="All Paths"
@@ -138,30 +140,30 @@
                                         x:Name="HamiltonButton"
                                         Click="Hamilton_Click"
                                         Background="#58a600"
-                                        Width="150"
-                                        />
+                                        Width="150" />
 
                                 <Button Content="Hamilton Cycle"
                                         x:Name="HamiltonCButton"
                                         Click="HamiltonCycle_Click"
                                         Background="#88a600"
-                                        Width="150"/>
+                                        Width="150" />
 
                                 <Button Content="Euler Path"
                                         x:Name="EulerButton"
                                         Click="Euler_Click"
                                         Background="#072ca6"
-                                        Width="150"/>
+                                        Width="150" />
 
                                 <Button Content="Euler Cycle"
                                         x:Name="EulerCButton"
                                         Click="EulerCycle_Click"
                                         Background="#527aff"
-                                        Width="150"/>
+                                        Width="150" />
 
                                 <TextBlock Text="Spanning Trees:"
                                            Margin="0,5,0,5"
-                                           HorizontalAlignment="Center"/>
+                                           HorizontalAlignment="Center" />
+                                
                                 <Button Content="Kruskal"
                                         x:Name="KruskalButton"
                                         Click="Kruskal_Click"
@@ -181,37 +183,48 @@
                                     </ToolTipService.ToolTip>
 
                                 </Button>
-
+                                
+                                <TextBlock Text="Shortest Path:"
+                                           Margin="0,5,0,5"
+                                           HorizontalAlignment="Center" />
+                                
                                 <Button Content="Dijkstra"
                                         x:Name="DijkstraButton"
                                         Click="Dijkstra_Click"
-                                        Background="#d9003a"
+                                        Background="#e90fff"
                                         Width="150">
                                     <ToolTipService.ToolTip>
                                         <ToolTip>
                                             <TextBlock>
-                                                  
+                                                Draws the shortest path between nodes based on distance.
+                                                <LineBreak />
+                                                Requires you to select your starting and target node.
                                             </TextBlock>
                                         </ToolTip>
                                     </ToolTipService.ToolTip>
 
                                 </Button>
+                                
                             </StackPanel>
-                           
+
                         </Flyout>
                     </DropDownButton.Flyout>
                 </DropDownButton>
-
+                <InfoBar x:Name="MainInfoBar"
+                         IsOpen="False"
+                         Severity="Error"
+                         Title="Error"
+                         Message="Essential app message for your users to be informed of, acknowledge, or take action on."
+                         RelativePanel.AlignHorizontalCenterWithPanel="True">
+                    <InfoBar.ActionButton>
+                        <Button x:Name="infoactionbutton"
+                                Content="Action" />
+                    </InfoBar.ActionButton>
+                </InfoBar>
             </RelativePanel>
         </StackPanel>
+
         
-        <InfoBar x:Name="MainInfoBar" 
-                 IsOpen="False"
-                 Severity="Error"
-                 Title="Error"
-                 Message="Essential app message for your users to be informed of, acknowledge, or take action on."
-                 HorizontalAlignment="Center"
-                 VerticalAlignment="Top"/>
         <Grid x:Name="Overlay" 
               Background="Gray" 
               Opacity="0.33" 
@@ -221,6 +234,8 @@
                           MinHeight="200"
                           MinWidth="200"/>
         </Grid>
+
+        
     </Grid>
     
 </Window>

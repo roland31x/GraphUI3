@@ -33,7 +33,7 @@ namespace Graphing
                 sb.Append(i)
                 .Append(' ')
                 .Append(Nodes[i].Name == "" ? "_" : Nodes[i].Name
-                .Replace(" ", "_")).Append(' ').Append(Nodes[i].Value)
+                .Replace(" ", "_"))
                 .Append(' ')
                 .Append(Nodes[i].X.ToString(CultureInfo.InvariantCulture))
                 .Append(' ')
@@ -73,7 +73,6 @@ namespace Graphing
                 Node toadd = new Node()
                 {
                     Name = name,
-                    Value = value,
                     X = Xpos,
                     Y = Ypos,
                 };
@@ -283,46 +282,52 @@ namespace Graphing
         public static Task<(List<Node>,double)> Dijkstra(this Graph g, Node start, Node target)
         {
             List<Node> result = new List<Node>();
-            double bestdist = -1;
+            decimal bestdist = -1;
+
+            Dictionary<Edge,decimal> edgew = new Dictionary<Edge,decimal>();
+            foreach (Edge e in g.Edges)
+            {
+                decimal weight = (decimal)Math.Round(e.Weight, 3);
+                if (weight == 0)
+                    weight = 1;
+                edgew.Add(e, weight);
+            }
+                
+
+            Dictionary<Node, decimal> distarray = new Dictionary<Node, decimal>();
+            foreach(Node n in g.Nodes)
+                distarray.Add(n, decimal.MaxValue);
 
             PriorityQueue<(Node,decimal), decimal> pq = new PriorityQueue<(Node,decimal), decimal>();
             pq.Enqueue((start,0), 0);
             while(pq.Count > 0)
             {
                 (Node deq, decimal dist) = pq.Dequeue();
-                if (deq.Value < (double)dist && deq.Value != 0)
+                if (distarray[deq] != decimal.MaxValue)
                     continue;
-                deq.Value = (double)dist;
+                distarray[deq] = dist;
                 List<Edge> neighbors = g.Edges.Where(x => (x.A == deq || x.B == deq)).ToList();
                 foreach(Edge e in neighbors)
                 {
-                    decimal nextdist = (decimal)(e.Weight == 0 ? 1 : e.Weight);
-                    pq.Enqueue((e.A == deq ? e.B : e.A, nextdist), dist + nextdist);
+                    decimal nextdist = dist + edgew[e];
+                    pq.Enqueue((e.A == deq ? e.B : e.A, nextdist), nextdist);
                 }
-            }
+            }            
 
-            Dictionary<Node, double> distarray = new Dictionary<Node, double>();
-            g.Nodes.ForEach(n => 
-            { 
-                distarray.Add(n, n.Value);
-                n.Value = -1;
-            });              
-
-            if (target.Value == -1)
+            if (distarray[target] == decimal.MaxValue)
                 return Task.FromResult((result, (double)bestdist));
 
 
-            bestdist = target.Value;
+            bestdist = distarray[target];
             Node back = target;
-            result.Add(target);
             while(back != start)
             {
                 List<Edge> neighbors = g.Edges.Where(x => (x.A == back || x.B == back)).ToList();
                 foreach(Edge e in neighbors)
                 {
                     Node other = e.A == back ? e.B : e.A;
-                    decimal distbetween = (decimal)distarray[back] - (decimal)distarray[other];
-                    if(e.Weight == (double)distbetween)
+                    decimal distbetween = distarray[back] - distarray[other];
+                    if (edgew[e] == distbetween)
                     {
                         result.Add(back);
                         back = other;
@@ -336,13 +341,11 @@ namespace Graphing
     }
     public class Node
     {
-        public double Value { get; set; } = -1;
         public string Name { get; set; }
         public double X { get; set; }
         public double Y { get; set; }
-        public Node(int value = -1, string name = "")
+        public Node(string name = "")
         {
-            Value = value;
             Name = name;
         }
     }
