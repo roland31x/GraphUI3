@@ -2,20 +2,14 @@
 using Microsoft.UI.Xaml.Shapes;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Linq;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Input;
-using static GraphUI3.UINode;
 using Microsoft.UI;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Input;
 using Windows.Foundation;
 using Graphing;
 using Windows.UI;
-using System.Globalization;
 using GraphUI3.UIStuff;
 
 namespace GraphUI3
@@ -109,7 +103,7 @@ namespace GraphUI3
                 tb.Background = new SolidColorBrush(Colors.Black);
                 return;
             }
-            if (double.TryParse(text, out double value))
+            if (double.TryParse(text, out double value) && (value >= 1 || value == 0))
             {
                 if (value >= 0)
                 {
