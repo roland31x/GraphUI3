@@ -15,8 +15,12 @@
 	<GenerateAppInstallerFile>False</GenerateAppInstallerFile>	  
 	<AppxPackageSigningEnabled>False</AppxPackageSigningEnabled>	  
 	<AppxPackageSigningTimestampDigestAlgorithm>SHA256</AppxPackageSigningTimestampDigestAlgorithm>	  
-	<AppxAutoIncrementPackageRevision>False</AppxAutoIncrementPackageRevision>	  
-	<AppxPackageDir>D:\DEPLOYEDAPPS\GraphUI3\</AppxPackageDir>	  
+	<AppxAutoIncrementPackageRevision>False</AppxAutoIncrementPackageRevision>
+	  
+	  <!-- careful with this, you might not have a D drive! -->
+	<AppxPackageDir>D:\DEPLOYEDAPPS\GraphUI3\</AppxPackageDir>
+	  <!-- careful with this, you might not have a D drive! -->
+	  
 	<AppxSymbolPackageEnabled>False</AppxSymbolPackageEnabled>	  
 	<GenerateTestArtifacts>False</GenerateTestArtifacts>	  
 	<AppxBundle>Never</AppxBundle>	  
